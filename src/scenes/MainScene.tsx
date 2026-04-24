@@ -4,7 +4,7 @@ import RubikCube from "../components/cube/RubikCube";
 
 type MainSceneProps = {
     explode: boolean,
-    isRotate?:boolean
+    isRotate:boolean
 }
 
 export default function MainScene({explode, isRotate}:MainSceneProps) {
@@ -13,7 +13,7 @@ export default function MainScene({explode, isRotate}:MainSceneProps) {
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
 
-            <RubikCube explode={explode}/>
+            <RubikCube explode={explode} isRotate={isRotate}/>
 
             <OrbitControls
                 rotateSpeed={0.35}

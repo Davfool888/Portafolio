@@ -12,7 +12,7 @@ function App() {
   
   <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
   <MainScene explode={explode} isRotate={isRotate}/>
-  <ExpandedCube  isRotate={isRotate}/>
+  <ExpandedCube  explode={explode} setExplode={setExplode}/>
   </div>
 
   <div style={{ position: "absolute", top: 50, left: 20, zIndex: 10 }}>

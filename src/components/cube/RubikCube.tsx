@@ -4,7 +4,12 @@ import { Group } from "three"
 import { useFrame } from "@react-three/fiber"
 
 
-export default function RubikCube({explode}:{explode:boolean}) {
+type RubikCubeProps = {
+    explode: boolean,
+    isRotate:boolean
+}
+
+export default function RubikCube({explode, isRotate}: RubikCubeProps) {
 
 
     const groupRef = useRef<Group>(null!)
@@ -28,10 +33,9 @@ export default function RubikCube({explode}:{explode:boolean}) {
     }
 
     useFrame(()=>{
-        if(groupRef.current){
+        if(!groupRef.current || !isRotate) return
             groupRef.current.rotation.y += 0.002
             groupRef.current.rotation.x += 0.001
-        }
     })
 
     return (

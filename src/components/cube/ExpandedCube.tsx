@@ -3,18 +3,19 @@ import MainScene from "../../scenes/MainScene";
 
 
 type ExpandedCubeProps ={
-    isRotate:boolean
+    explode:boolean
+    setExplode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function ExpandedCube({isRotate}: ExpandedCubeProps){
-    const [explode, setExplode] = useState(false)
+export default function ExpandedCube({explode, setExplode}: ExpandedCubeProps){
+  
     
 
     return(
         <>
         <button
         
-        onClick={() => setExplode(!explode)}
+        onClick={() => setExplode(prev => !prev)}
         style={{
             position: "absolute",
           top: 20,
@@ -33,7 +34,6 @@ export default function ExpandedCube({isRotate}: ExpandedCubeProps){
 
         </button>
 
-        <MainScene explode={explode}/>
         </>
     )
 }
