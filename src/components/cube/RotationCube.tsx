@@ -18,10 +18,6 @@ return (
     <button
     onClick={()=>setIsRotate(prev => !prev)}
     style={{
-        position: "absolute",
-          top: 20,
-          left: 10,
-          zIndex: 10,
           padding: "10px 30px",
           background: "#7c3aed",
           color: "white",
