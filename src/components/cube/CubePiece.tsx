@@ -1,103 +1,77 @@
-import { Matrix4, Mesh } from "three"
 import { RoundedBox } from "@react-three/drei"
-import { useEffect, useMemo, useRef, useState } from "react"
+import * as THREE from "three"
+import { useMemo } from "react"
 
+export default function CubePiece({ matrix, colors }: CubePieceProps) {
+    // Const para el desarrollo de los stikeres
+    const BASE_SIZE = 0.94 // 
+    const STICKER_SIZE = 0.78
+    const STICKER_THICKNESS = 0.04
+    const OFFSET = 0.48 
 
+    // efecto de materiales
+    const bodyMaterial = (
+        <meshPhysicalMaterial 
+            color="#f0f2f5"       
+            metalness={0.05}
+            roughness={0.2}       
+            transmission={0.6}   
+            thickness={1}         
+            transparent={true}
+            opacity={0.9}
+        />
+    )
 
-type Props = {
-    matrix: Matrix4
-    colors: {
-        right?: string
-        left?: string
-        top?: string
-        bottom?: string
-        front?: string
-        back?: string
-    }
-}
+    const stickerGeometry = useMemo(() => {
+        const shape = new THREE.Shape()
+        const s = STICKER_SIZE / 2
+        const r = 0.25 // 
 
-export default function CubePiece({ matrix, colors = {} }: Props) {
+        shape.moveTo(-s + r, -s)
+        shape.lineTo(s - r, -s)
+        shape.absarc(s - r, -s + r, r, Math.PI * 1.5, 0, false)
+        shape.lineTo(s, s - r)
+        shape.absarc(s - r, s - r, r, 0, Math.PI * 0.5, false)
+        shape.lineTo(-s + r, s)
+        shape.absarc(-s + r, s - r, r, Math.PI * 0.5, Math.PI, false)
+        shape.lineTo(-s, -s + r)
+        shape.absarc(-s + r, -s + r, r, Math.PI, Math.PI * 1.5, false)
 
+        return new THREE.ExtrudeGeometry(shape, {
+            depth: STICKER_THICKNESS,
+            bevelEnabled: true,
+            bevelThickness: 0.03, 
+            bevelSize: 0.03,
+            bevelSegments: 8
+        })
+    }, [])
 
-    const ref = useRef<any>(null!)
-    // useState Y Hover para seleccionar cubos de manera individual
-    const [hovered, setHovered] = useState(false)
-    const stickerOffset = 0.49
-
-    const faceColors = useMemo(() => ({
-        right: colors.right,
-        left: colors.left,
-        top: colors.top,
-        bottom: colors.bottom,
-        front: colors.front,
-        back: colors.back,
-    }), [colors])
-
-    useEffect(()=>{
-        if(!ref.current) return
-            ref.current.matrixAutoUpdate = false
-            ref.current.matrix.copy(matrix)
-            ref.current.matrixWorldNeedsUpdate = true
+    const Sticker = ({ color, position, rotation }: { color: string, position: [number, number, number], rotation: [number, number, number] }) => (
+        <mesh position={position} rotation={rotation} geometry={stickerGeometry}>
         
-    }, [matrix])
-
-
-
+            <meshPhysicalMaterial 
+                color={color} 
+                emissive={color}     
+                emissiveIntensity={0.6} 
+                roughness={0.1} 
+                metalness={0.1}
+                transmission={0.3}    
+                transparent={true}
+            />
+        </mesh>
+    )
 
     return (
-        <group ref={ref}  onPointerOver={() => setHovered(true)} onPointerOut={() => setHovered(false)}>
-
-
-            {/* Color principal del cubo */}
-            <RoundedBox args={[0.96, 0.96, 0.96]} radius={0.2} smoothness={4}>
-                <meshStandardMaterial roughness={0.5} color={hovered ? "#c0dd30" : "#ffffff"} />
+        <group matrix={matrix} matrixAutoUpdate={false}>
+            <RoundedBox args={[BASE_SIZE, BASE_SIZE, BASE_SIZE]} radius={0.18} smoothness={10}>
+                {bodyMaterial}
             </RoundedBox>
-
-            {/* Color derecha o RIGHT */}
-            {faceColors.right && (
-                <mesh position={[stickerOffset, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
-                    <planeGeometry args={[0.6, 0.6]} />
-                    <meshStandardMaterial color={faceColors.right} />
-                </mesh>
-            )}
-
-
-            {faceColors.left && (
-                <mesh position={[-stickerOffset, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
-                    <planeGeometry args={[0.6, 0.6]} />
-                    <meshStandardMaterial color={faceColors.left} />
-                </mesh>
-            )}
-
-            {faceColors.top && (
-                <mesh position={[0, stickerOffset, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                    <planeGeometry args={[0.6, 0.6]} />
-                    <meshStandardMaterial color={faceColors.top} />
-                </mesh>
-            )}
-
-            {faceColors.bottom && (
-                <mesh position={[0, -stickerOffset, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                    <planeGeometry args={[0.6, 0.6]} />
-                    <meshStandardMaterial color={faceColors.bottom} />
-                </mesh>
-            )}
-
-            {faceColors.back && (
-                <mesh position={[0, 0, -stickerOffset]} rotation={[0, Math.PI, 0]}>
-                    <planeGeometry args={[0.6, 0.6]} />
-                    <meshStandardMaterial color={faceColors.back} />
-                </mesh>
-            )}
-
-
-            {faceColors.front && (
-                <mesh position={[0, 0, stickerOffset]} >
-                    <planeGeometry args={[0.6, 0.6]} />
-                    <meshStandardMaterial color={faceColors.front} />
-                </mesh>
-            )}
-
+            {colors.top && <Sticker color={colors.top} position={[0, OFFSET, 0]} rotation={[-Math.PI / 2, 0, 0]} />}
+            {colors.bottom && <Sticker color={colors.bottom} position={[0, -OFFSET, 0]} rotation={[Math.PI / 2, 0, 0]} />}
+            {colors.front && <Sticker color={colors.front} position={[0, 0, OFFSET]} rotation={[0, 0, 0]} />}
+            {colors.back && <Sticker color={colors.back} position={[0, 0, -OFFSET]} rotation={[0, Math.PI, 0]} />}
+            {colors.right && <Sticker color={colors.right} position={[OFFSET, 0, 0]} rotation={[0, Math.PI / 2, 0]} />}
+            {colors.left && <Sticker color={colors.left} position={[-OFFSET, 0, 0]} rotation={[0, -Math.PI / 2, 0]} />}
         </group>
     )
 }

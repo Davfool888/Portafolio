@@ -1,19 +1,22 @@
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import RubikCube from "../components/cube/RubikCube";
+import { Canvas } from "@react-three/fiber"
+import { OrbitControls } from "@react-three/drei"
+import RubikCube from "../components/cube/RubikCube"
 import type { Cubie } from "../logic/cubeModel"
+import type { MoveType } from "../App"
+
+
 
 type MainSceneProps = {
     cubies: Cubie[]
     explode: boolean
     isRotate: boolean
 
-    move: "U" | null
+    move: MoveType | null
     isAnimating: boolean
 
     setCubies: React.Dispatch<React.SetStateAction<Cubie[]>>
     setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>
-    setMove: React.Dispatch<React.SetStateAction<"U" | null>>
+    setMove: React.Dispatch<React.SetStateAction<MoveType| null>>
 }
 
 export default function MainScene({ cubies, explode, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove }: MainSceneProps) {
@@ -24,7 +27,6 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
 
             <RubikCube
                 explode={explode}
-                isRotate={isRotate}
                 cubies={cubies}
                 move={move}
                 isAnimating={isAnimating}

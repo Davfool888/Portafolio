@@ -1,65 +1,77 @@
+import { Switch } from "three/tsl"
 import type { Cubie } from "./cubeModel"
-import { Matrix4, Vector3 } from "three"
-
-function getPositionFromMatrix(matrix: Matrix4): [number, number, number] {
-  const pos = new Vector3().setFromMatrixPosition(matrix)
-
-  return [
-    Math.round(pos.x),
-    Math.round(pos.y),
-    Math.round(pos.z),
-  ]
-}
+import { Matrix4 } from "three"
 
 
-function rotateYColors(colors: Cubie["colors"]): Cubie["colors"] {
-  return {
-right: colors.right,
-    front: colors.left,
-    left: colors.front,
-    back: colors.back,
-    top: colors.top,
-    bottom: colors.bottom,
+function rotatePosition(
+  pos: [number, number, number],
+  axis: "x" | "y" | "z",
+  dir: 1 | -1
+): [number, number, number] {
+  const [x, y, z] = pos
+
+  if (axis === "x") {
+    return [x, dir * z, -dir * y]
   }
+
+  if (axis === "y") {
+    return [-dir * z, y, dir * x]
+  }
+
+  if (axis === "z") {
+    return [dir * y, -dir * x, z]
+  }
+
+  return pos
+
 }
 
 
 
-export function rotateTopFace(cubies: Cubie[]): Cubie[] {
-  return cubies.map((cubie) => {
-    if (cubie.position[1] !== 1) return cubie
 
-    // 🔥 1. ROTACIÓN
-    const rotation = new Matrix4().makeRotationAxis(
-      new Vector3(0, 1, 0),
-      Math.PI / 2
-    )
+export function rotateCubeFace(
+  cubies: Cubie[],
+  axis: "x" | "y" | "z",
+  layerValue: number,
+  direction: 1 | -1
+): Cubie[] {
 
-    // 🔥 2. POSICIÓN ACTUAL COMO VECTOR
-    const currentPos = new Vector3(...cubie.position)
+const rotationMatrix = new Matrix4()
 
-    // 🔥 3. ROTAS LA POSICIÓN (ESTO ES CLAVE)
-    const newPosVec = currentPos.clone().applyMatrix4(rotation)
+let angle = (Math.PI / 2) * direction
 
-    // 🔥 4. REDONDEO LIMPIO
-    const newPosition: [number, number, number] = [
-      Math.round(newPosVec.x),
-      Math.round(newPosVec.y),
-      Math.round(newPosVec.z),
-    ]
+if (axis === "x" || axis === "y" || axis === "z") angle = -angle
+if (axis === "x") rotationMatrix.makeRotationX(angle)
+if (axis === "y") rotationMatrix.makeRotationY(angle)
+if (axis === "z") rotationMatrix.makeRotationZ(angle)
 
-    // 🔥 5. CREAS MATRIX DESDE CERO (NO CLONE)
-    const newMatrix = new Matrix4().makeTranslation(
-      newPosition[0],
-      newPosition[1],
-      newPosition[2]
-    )
+return cubies.map((cubie) => {
 
-    return {
-      ...cubie,
-      position: newPosition,
-      matrix: newMatrix,
-      colors: cubie.colors // por ahora déjalos así
-    }
-  })
+  const currentPosValue = axis === "x" ? cubie.position[0] :
+    axis === "y" ? cubie.position[1] :
+      cubie.position[2]
+
+  if (Math.abs(currentPosValue - layerValue) > 0.01) {
+    return cubie
+  }
+
+  const newPosition = rotatePosition(cubie.position, axis, direction)
+
+  const newMatrix = cubie.matrix.clone()
+  newMatrix.premultiply(rotationMatrix)
+  newMatrix.setPosition(newPosition[0], newPosition[1], newPosition[2])
+
+
+
+
+  return {
+    ...cubie,
+    position: newPosition,
+    matrix: newMatrix
+  }
+
+})
 }
+
+
+

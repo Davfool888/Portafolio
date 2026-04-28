@@ -3,13 +3,13 @@ import './App.css'
 
 import ExpandedCube from "./components/cube/ExpandedCube"
 import RotationCube from './components/cube/RotationCube'
-import RotationYellow from './components/cube/rotationFaces/RotationYellow'
-
+import RotationU from './components/cube/rotationFaces/MoveButton'
+import MoveButton from './components/cube/rotationFaces/MoveButton'
 import MainScene from './scenes/MainScene'
 
 import { createCubeModel } from './logic/cubeModel'
-import { rotateTopFace } from './logic/rubikEngine'
 
+export type MoveType = "U" | "R" | "F" | "L" | "D" | "B" | "U'" | "R'" | "F'" | "L'" | "D'" | "B'"
 
 function App() {
   const [explode, setExplode] = useState(false)
@@ -19,12 +19,14 @@ function App() {
   const [cubies, setCubies] = useState(createCubeModel())
 
   const [isAnimating, setIsAnimating] = useState(false)
-  const [move, setMove] = useState<"U" | null>(null)
+  const [move, setMove] = useState<MoveType| null>(null)
 
-  const handleRotateTOp = () => {
-    setCubies(prev => rotateTopFace(prev))
-  }
-
+ const handleMove = (m: MoveType) =>{
+  if(isAnimating) return
+  setMove(m)
+  setIsAnimating(true)
+ }
+ const moveList: MoveType[] = ["U", "R", "F","B","D","L", "U'", "R'", "F'", "B'",  "D'",  "L'"]
 
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
@@ -46,11 +48,18 @@ function App() {
       <div style={{ position: "absolute", top: 20, left: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: "10px" }}>
         <ExpandedCube explode={explode} setExplode={setExplode} />
         <RotationCube isRotate={isRotate} setIsRotate={setIsRotate} />
-        <RotationYellow onRotate={() => {
-          if (isAnimating) return
-          setMove("U")
-          setIsAnimating(true)
-        }} />
+        <hr style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "100%" }} />
+        <div>
+          {moveList.map((m)=>(
+            <MoveButton
+            key={m}
+            label={m}
+            onRotate={(selectedMove) => handleMove(selectedMove)}
+            />
+          ))}
+        </div>
+
+       
       </div>
 
 
