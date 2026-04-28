@@ -2,6 +2,18 @@ import { RoundedBox } from "@react-three/drei"
 import * as THREE from "three"
 import { useMemo } from "react"
 
+type CubePieceProps = {
+    matrix: THREE.Matrix4
+    colors: {
+        right?: string;
+        left?: string;
+        top?: string;
+        bottom?: string;
+        front?: string;
+        back?: string;
+    }
+}
+
 export default function CubePiece({ matrix, colors }: CubePieceProps) {
     // Const para el desarrollo de los stikeres
     const BASE_SIZE = 0.94 // 
