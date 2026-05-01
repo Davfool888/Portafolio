@@ -27,7 +27,7 @@ export default function CubePiece({ matrix, colors }: CubePieceProps) {
             color="#f0f2f5"       
             metalness={0.05}
             roughness={0.2}       
-            transmission={0.6}   
+            transmission={0.9}   
             thickness={1}         
             transparent={true}
             opacity={0.9}
@@ -64,7 +64,7 @@ export default function CubePiece({ matrix, colors }: CubePieceProps) {
             <meshPhysicalMaterial 
                 color={color} 
                 emissive={color}     
-                emissiveIntensity={0.6} 
+                emissiveIntensity={0.5} 
                 roughness={0.1} 
                 metalness={0.1}
                 transmission={0.3}    

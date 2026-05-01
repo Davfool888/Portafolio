@@ -1,67 +1,87 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react"
+import { Canvas } from "@react-three/fiber"
+import { ScrollControls, Scroll } from "@react-three/drei"
 
-import ExpandedCube from "./components/cube/ExpandedCube"
-import RotationCube from './components/cube/RotationCube'
-import RotationU from './components/cube/rotationFaces/MoveButton'
-import MoveButton from './components/cube/rotationFaces/MoveButton'
-import MainScene from './scenes/MainScene'
+import HomeSection from "./components/home/HomeSection"
+import Navbar from "./components/layauot/Navbar"
+import WorkSection from "./components/home/WorkSection"
+import AboutSection from "./components/home/AboutSection"
+import ContactSection from "./components/home/ContactSection"
+import PlaySection from "./components/home/PlaySection"
 
-import { createCubeModel } from './logic/cubeModel'
+import MainScene from "./scenes/MainScene"
 
-export type MoveType = "U" | "R" | "F" | "L" | "D" | "B" | "U'" | "R'" | "F'" | "L'" | "D'" | "B'"
+import { createCubeModel } from "./logic/cubeModel"
+import type { MoveType } from "./types/cube.types"
+
 
 function App() {
+  const sections = ["home", "work", "about", "contact", "play"]
+  const [activeSection, setActiveSection] = useState("home")
+
+
   const [explode, setExplode] = useState(false)
   const [isRotate, setIsRotate] = useState(true)
-
-
   const [cubies, setCubies] = useState(createCubeModel())
-
   const [isAnimating, setIsAnimating] = useState(false)
-  const [move, setMove] = useState<MoveType| null>(null)
+  const [move, setMove] = useState<MoveType | null>(null)
 
- const handleMove = (m: MoveType) =>{
-  if(isAnimating) return
-  setMove(m)
-  setIsAnimating(true)
- }
- const moveList: MoveType[] = ["U", "R", "F","B","D","L", "U'", "R'", "F'", "B'",  "D'",  "L'"]
+  const scrollToSection = (id: string) => {
+  
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
+ 
 
   return (
-    <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#f8f3ff] via-[#fff5f7] to-[#f0fdf9]">
 
-      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-        <MainScene
-          cubies={cubies}
-          explode={explode}
-          isRotate={isRotate}
-          move={move}
-          isAnimating={isAnimating}
-          setCubies={setCubies}
-          setIsAnimating={setIsAnimating}
-          setMove={setMove} />
+      {/* Luces (Fondo fijo) */}
+      <div className="fixed top-20 left-10 w-40 h-40 rounded-full bg-[#c471ed]/20 blur-3xl pointer-events-none" />
+      <div className="fixed bottom-40 right-20 w-48 h-48 rounded-full bg-[#ff6b9d]/20 blur-3xl pointer-events-none" />
+      <div className="fixed top-1/2 left-1/3 w-32 h-32 rounded-full bg-[#4ecdc4]/15 blur-2xl pointer-events-none" />
 
+      {/* Navbar always on top */}
+      <div className="fixed top-0 left-0 w-full z-50 pointer-events-auto">
+        <Navbar
+          sections={sections}
+          onNavigate={scrollToSection}
+          activeSection={activeSection}
+        />
       </div>
 
-
-      <div style={{ position: "absolute", top: 20, left: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: "10px" }}>
-        <ExpandedCube explode={explode} setExplode={setExplode} />
-        <RotationCube isRotate={isRotate} setIsRotate={setIsRotate} />
-        <hr style={{ border: "0.5px solid rgba(255,255,255,0.2)", width: "100%" }} />
-        <div>
-          {moveList.map((m)=>(
-            <MoveButton
-            key={m}
-            label={m}
-            onRotate={(selectedMove) => handleMove(selectedMove)}
+      {/* 3D Canvas Global */}
+      <div className="fixed inset-0 z-0">
+        <Canvas camera={{ position: [4, 4, 4], fov: 50 }}>
+          <ScrollControls pages={5} damping={0.2}>
+            
+            <MainScene
+              cubies={cubies}
+              explode={explode}
+              isRotate={isRotate}
+              move={move}
+              isAnimating={isAnimating}
+              setCubies={setCubies}
+              setIsAnimating={setIsAnimating}
+              setMove={setMove}
             />
-          ))}
-        </div>
 
-       
+            <Scroll html style={{ width: '100vw' }}>
+              <div className="pointer-events-auto">
+                <HomeSection setActiveSection={setActiveSection} />
+                <WorkSection setActiveSection={setActiveSection} />
+                <AboutSection setActiveSection={setActiveSection} />
+                <ContactSection setActiveSection={setActiveSection} />
+                <PlaySection setActiveSection={setActiveSection} />
+              </div>
+            </Scroll>
+
+          </ScrollControls>
+        </Canvas>
       </div>
-
 
     </div>
   )

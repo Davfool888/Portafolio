@@ -1,11 +1,9 @@
-import { Canvas } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
 import RubikCube from "../components/cube/RubikCube"
 import type { Cubie } from "../logic/cubeModel"
 import MoveControl from "../components/cube/rotationFaces/MoveControl" 
-import type { MoveType } from "../App"
-
-
+import type { MoveType } from "../types/cube.types"
+import ScrollCubeController from "../components/cube/ScrollCubeController"
 
 type MainSceneProps = {
     cubies: Cubie[]
@@ -29,72 +27,64 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
     }
     
     return (
-        <Canvas camera={{ position: [4, 4, 4], fov: 50 }}>
+        <>
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
 
-            <RubikCube
-                explode={explode}
-                cubies={cubies}
-                move={move}
-                isAnimating={isAnimating}
-                setCubies={setCubies}
-                setIsAnimating={setIsAnimating}
-                setMove={setMove} />
-
+            <ScrollCubeController cubies={cubies}>
+                <RubikCube
+                    explode={explode}
+                    cubies={cubies}
+                    move={move}
+                    isAnimating={isAnimating}
+                    setCubies={setCubies}
+                    setIsAnimating={setIsAnimating}
+                    setMove={setMove} 
+                />
 
                 {/* Controles 3d como buttoms */}
-
-                 <MoveControl 
-                label="U"
-                position={[0, 2.5, 0]}
-                rotation={[0,0,Math.PI ]}
-                onMove={executeMove}
-                />
-
                 <MoveControl 
-                label="R"
-                position={[2.5, 0, 0]}
-                rotation={[0,0,-Math.PI / 2]}
-                onMove={executeMove}
+                    label="U"
+                    position={[0, 2.5, 0]}
+                    rotation={[0,0,Math.PI ]}
+                    onMove={executeMove}
                 />
-
                 <MoveControl 
-                label="D"
-                position={[0, -2.5, 0]}
-                rotation={[0,0,Math.PI ]}
-                onMove={executeMove}
+                    label="R"
+                    position={[2.5, 0, 0]}
+                    rotation={[0,0,-Math.PI / 2]}
+                    onMove={executeMove}
                 />
-
-                 <MoveControl 
-                label="L"
-                position={[-2.5, 0,0]}
-                rotation={[0,0, Math.PI / 2 ]}
-                onMove={executeMove}
+                <MoveControl 
+                    label="D"
+                    position={[0, -2.5, 0]}
+                    rotation={[0,0,Math.PI ]}
+                    onMove={executeMove}
                 />
-
-
-                 <MoveControl 
-                label="F"
-                position={[0, 0,2.5]}
-                rotation={[Math.PI / 2 ,0,0 ]}
-                onMove={executeMove}
+                <MoveControl 
+                    label="L"
+                    position={[-2.5, 0,0]}
+                    rotation={[0,0, Math.PI / 2 ]}
+                    onMove={executeMove}
                 />
-
-
-                   <MoveControl 
-                label="B"
-                position={[0, 0,-2.5]}
-                rotation={[-Math.PI / 2 ,0,0 ]}
-                onMove={executeMove}
+                <MoveControl 
+                    label="F"
+                    position={[0, 0,2.5]}
+                    rotation={[Math.PI / 2 ,0,0 ]}
+                    onMove={executeMove}
                 />
+                <MoveControl 
+                    label="B"
+                    position={[0, 0,-2.5]}
+                    rotation={[-Math.PI / 2 ,0,0 ]}
+                    onMove={executeMove}
+                />
+            </ScrollCubeController>
 
-
-{/* Controles para la camara */}
-
+            {/* Controles para la camara */}
             <OrbitControls
                 rotateSpeed={0.35}
-                zoomSpeed={0.6}
+                enableZoom={false}
                 panSpeed={0.5}
 
                 enableDamping
@@ -104,7 +94,6 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
                 maxPolarAngle={Math.PI}
                 enablePan={false}
             />
-
-        </Canvas>
+        </>
     )
 }
