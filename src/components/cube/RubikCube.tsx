@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber"
 import CubePiece from "./CubePiece"
 import { Group, Matrix4, Vector3, Quaternion } from "three"
 import type { Cubie } from "../../logic/cubeModel"
-import type { MoveType } from "../../App"
+import type { MoveType } from "../../types/cube.types"
 import { rotateCubeFace } from "../../logic/rubikEngine"
 
 

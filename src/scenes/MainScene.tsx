@@ -1,4 +1,6 @@
-import { OrbitControls } from "@react-three/drei"
+import { OrbitControls, useScroll } from "@react-three/drei"
+import { useFrame } from "@react-three/fiber"
+import React, { useRef } from "react"
 import RubikCube from "../components/cube/RubikCube"
 import type { Cubie } from "../logic/cubeModel"
 import MoveControl from "../components/cube/rotationFaces/MoveControl" 
@@ -16,22 +18,39 @@ type MainSceneProps = {
     setCubies: React.Dispatch<React.SetStateAction<Cubie[]>>
     setIsAnimating: React.Dispatch<React.SetStateAction<boolean>>
     setMove: React.Dispatch<React.SetStateAction<MoveType| null>>
+
+    projectIndex: number
+    setProjectIndex: React.Dispatch<React.SetStateAction<number>>
 }
 
-export default function MainScene({ cubies, explode, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove }: MainSceneProps) {
+export default function MainScene({ cubies, explode, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove, projectIndex, setProjectIndex }: MainSceneProps) {
     
     const executeMove = (move: string) => {
         if(isAnimating) return
         setMove(move as MoveType)
         setIsAnimating(true)
     }
+
+    const controlsRef = useRef<any>(null)
+    const scroll = useScroll()
+
+    useFrame(() => {
+        if (!scroll || !controlsRef.current) return
+        const offset = scroll.offset
+        // Disable controls in WorkSection (offset 0.2 to 0.4)
+        if (offset >= 0.2 && offset < 0.4) {
+            controlsRef.current.enabled = false
+        } else {
+            controlsRef.current.enabled = true
+        }
+    })
     
     return (
         <>
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
 
-            <ScrollCubeController cubies={cubies}>
+            <ScrollCubeController cubies={cubies} projectIndex={projectIndex} setProjectIndex={setProjectIndex}>
                 <RubikCube
                     explode={explode}
                     cubies={cubies}
@@ -46,7 +65,7 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
                 <MoveControl 
                     label="U"
                     position={[0, 2.5, 0]}
-                    rotation={[0,0,Math.PI ]}
+                    rotation={[0, 0, 0]}
                     onMove={executeMove}
                 />
                 <MoveControl 
@@ -58,7 +77,7 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
                 <MoveControl 
                     label="D"
                     position={[0, -2.5, 0]}
-                    rotation={[0,0,Math.PI ]}
+                    rotation={[0,0, Math.PI ]}
                     onMove={executeMove}
                 />
                 <MoveControl 
@@ -83,6 +102,7 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
 
             {/* Controles para la camara */}
             <OrbitControls
+                ref={controlsRef}
                 rotateSpeed={0.35}
                 enableZoom={false}
                 panSpeed={0.5}

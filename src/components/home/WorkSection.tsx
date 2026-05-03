@@ -1,18 +1,66 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import SkillCard from '../ui/SkillCard'
+import { projects } from "../../data/projects"
+
+// Importaciones de estilos
+// Importacion para las flechas del lado izquierdo
+import { ChevronLeft, ChevronRight } from "lucide-react"
+// importacion para la animacion de cubo de los texto y que se vea fluido
+import { AnimatePresence, motion } from 'framer-motion'
+
 
 type Props = {
   setActiveSection?: (id: string) => void
+  projectIndex: number
+  setProjectIndex: (index: number | ((prev: number) => number)) => void; 
 }
 
-export default function WorkSection({ setActiveSection }: Props) {
+export default function WorkSection({ setActiveSection, projectIndex, setProjectIndex }: Props) {
 
+
+  // Estado para el carrusel de los diferentes proyectos
+  const [direction, setDirection] = useState(0)
+
+  // funciones para el carrusel infinito
+  // funcion de avanzar
+  const nextProject = () => {
+    setDirection(1)
+    setProjectIndex((prev) => (prev + 1) % projects.length)
+  }
+  // funcion de retroceder
+  const prevProject = () => {
+    setDirection(-1)
+    setProjectIndex((prev) =>
+      prev === 0 ? projects.length - 1 : prev - 1)
+  }
+
+  const project = projects[projectIndex]
+
+  //Tecnoligas a mapear para mostrar en cada proyecto
   const skills = [
     { icon: "⚛️", name: "React", color: "bg-purple-200" },
     { icon: "🟢", name: "Node", color: "bg-green-200" },
     { icon: "🎨", name: "Three.js", color: "bg-pink-200" }
   ]
 
+  // Rotaciones del texto como cuborubik
+  const cubeVariants = {
+    enter: (direction: number) => ({
+      rotateY: direction > 0 ? 90 : -90,
+      opacity: 0,
+    }),
+    center: {
+      rotateY: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      rotateY: direction > 0 ? -90 : 90,
+      opacity: 0
+    })
+  }
+
+
+  // Efecto para activar o desactivar seccion a traves del navbar
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -27,6 +75,8 @@ export default function WorkSection({ setActiveSection }: Props) {
     return () => observer.disconnect()
   }, [setActiveSection])
 
+
+
   return (
     <section
       id="work"
@@ -37,24 +87,56 @@ export default function WorkSection({ setActiveSection }: Props) {
 
 
       {/* GRID PRINCIPAL */}
-      <div className="container mx-auto px-12 z-10 grid grid-cols-3 gap-16">
+      <div className="container mx-auto px-12 z-10 grid grid-cols-3 gap-16 pointer-events-none">
+
+
 
         {/* IZQUIERDA */}
-        <div className="flex flex-col justify-center gap-6">
+        <div className="flex flex-col justify-center gap-6 pointer-events-auto">
           <span className="text-sm text-purple-600 font-semibold tracking-wide uppercase">
             Featured Project
           </span>
-          <h2 className="text-5xl font-bold text-gray-900 leading-tight">
-            AI Clash of Clans
-          </h2>
 
-          <p className="text-lg text-gray-600 leading-relaxed">
-            Desarrollé una inteligencia artificial para Clash of Clans que analiza aldeas mediante visión por computadora, identifica estructuras y evalúa estrategias de ataque, recomendando cómo y dónde desplegar tropas para maximizar la efectividad.          </p>
+          <div className="flex items-center gap-4 mb-2">
+            <button onClick={prevProject} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-xl border border-white/30 shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-purple-400/30 hover:scale-110 active:scale-95">
+              <ChevronLeft className="text-gray-700" size={22} />
+            </button>
+
+            <button onClick={nextProject} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-xl border border-white/30 shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all duration-300 hover:bg-purple-400/30 hover:scale-110 active:scale-95">
+              <ChevronRight className="text-gray-700" size={22} />
+            </button>
+          </div>
+
+          {/* contenedor de titulo y botones de carrusel */}
+          <div style={{ perspective: 1200 }} className="relative min-h-[300px] w-full">
+            <AnimatePresence custom={direction} mode='popLayout'>
+              <motion.div
+               key={projectIndex}
+                custom={direction}
+                variants={cubeVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"  
+                transition={{ duration: 0.6, type: "spring", bounce: 0.3 }} 
+                style={{ transformOrigin: "center center -150px" }}
+                className="absolute inset-0 flex flex-col gap-6"
+              >
+                {/* Título */}
+                <h2 className="text-5xl font-bold text-gray-900 leading-tight">
+                  {project.title}
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  {project.description}
+                </p>
+             
 
           <div className='flex gap-4 mt-2'>
             {skills.map((skill, i) => (
               <SkillCard key={skill.name} {...skill} delay={i * 100} />
             ))}
+          </div> 
+          </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 
@@ -64,7 +146,7 @@ export default function WorkSection({ setActiveSection }: Props) {
         </div>
 
         {/* DERECHA */}
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center pointer-events-auto">
 
           <div className="w-full h-[340px] rounded-3xl overflow-hidden bg-white/20 backdrop-blur-xl border border-white/40 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
 

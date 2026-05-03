@@ -13,23 +13,45 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
     // Estado para gestionar cuál flecha está brillando
     const [hovered, setHovered] = useState<string | null>(null);
 
-    // 1. Geometría de la flecha curva (TubeGeometry)
-    const arrowCurveGeometry = useMemo(() => {
-        const curve2D = new THREE.EllipseCurve(0, 0, 0.55, 0.55, 0, Math.PI / 1.5, false, 0);
-        const points2D = curve2D.getPoints(32);
-        // Mapeamos los puntos Vector2 a Vector3 paraTubeGeometry
-        const points3D = points2D.map(p => new THREE.Vector3(p.x, p.y, 0));
-        const curve3D = new THREE.CatmullRomCurve3(points3D);
+    // Geometría premium en 3D para la flecha (Solid Chevron Curve)
+    const arrowGeometry = useMemo(() => {
+        const shape = new THREE.Shape();
         
-        return new THREE.TubeGeometry(curve3D, 20, 0.025, 8, false); // Tubo delgado neón
+        const A = 0.2; // Inicio del arco
+        const C = Math.PI - 0.2; // Punta de la flecha
+        const B = C - 0.3; // Base de la punta
+        
+        const R_mid = 0.55;
+        const R_out = 0.59;
+        const R_in = 0.51;
+        const R_head_out = 0.66;
+        const R_head_in = 0.44;
+        
+        // Dibujo de la flecha
+        shape.absarc(0, 0, R_out, A, B, false);
+        shape.lineTo(R_head_out * Math.cos(B), R_head_out * Math.sin(B));
+        shape.lineTo(R_mid * Math.cos(C), R_mid * Math.sin(C));
+        shape.lineTo(R_head_in * Math.cos(B), R_head_in * Math.sin(B));
+        shape.lineTo(R_in * Math.cos(B), R_in * Math.sin(B));
+        shape.absarc(0, 0, R_in, B, A, true);
+        shape.lineTo(R_out * Math.cos(A), R_out * Math.sin(A));
+
+        return new THREE.ExtrudeGeometry(shape, {
+            depth: 0.02,
+            bevelEnabled: true,
+            bevelSegments: 4,
+            steps: 1,
+            bevelSize: 0.006,
+            bevelThickness: 0.006
+        });
     }, []);
 
     return (
         <group position={position} rotation={rotation}>
             <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3} >
                 
-                {/* A. DISCO ACRÍLICO (Base traslúcida) */}
-                <mesh onClick={(e) => e.stopPropagation()}>
+                {/* disco con diseño acrilico */}
+                <mesh>
                     <cylinderGeometry args={[0.75, 0.75, 0.04, 32]} />
                     <meshPhysicalMaterial
                         transparent
@@ -41,7 +63,7 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
                     />
                 </mesh>
 
-                {/* B. LETRA CENTRAL */}
+                {/* {Letra de indicacion del movimiento} */}
                 <Text
                     position={[0, 0.05, 0]}
                     rotation={[-Math.PI / 2, 0, 0]}
@@ -52,58 +74,57 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
                     {label}
                 </Text>
 
-                {/* C. GRUPO HORARIO (Verde Menta Neón) */}
+                {/* Grupo horario (CW) */}
                 <group 
-                    position={[0, 0, 0]}
                     onClick={(e) => { e.stopPropagation(); onMove(label); }}
                     onPointerOver={() => { setHovered('cw'); document.body.style.cursor = 'pointer'; }}
                     onPointerOut={() => { setHovered(null); document.body.style.cursor = 'auto'; }}
                 >
-                    {/* Flecha visible */}
-                    <mesh geometry={arrowCurveGeometry} rotation={[-Math.PI / 2, 0, -Math.PI / 4]} position={[0, 0.05, 0]}>
+                    <mesh 
+                        geometry={arrowGeometry} 
+                        rotation={[-Math.PI / 2, 0, Math.PI / 2]} 
+                        scale={[1, -1, 1]}
+                        position={[0, 0.05, 0]}
+                    >
                         <meshStandardMaterial 
                             color="#00FFC6" 
                             emissive="#00FFC6" 
-                            emissiveIntensity={hovered === 'cw' ? 5 : 2} // Feedback visual
+                            emissiveIntensity={hovered === 'cw' ? 4 : 1.5}
+                            roughness={0.2}
+                            metalness={0.5}
                         />
                     </mesh>
-                    {/* Punta de la flecha */}
-                    <mesh position={[0.45, 0.05, 0.3]} rotation={[0, -Math.PI / 4, 0]}>
-                        <coneGeometry args={[0.06, 0.12, 4]} />
-                        <meshStandardMaterial color="#00FFC6" emissive="#00FFC6" emissiveIntensity={2} />
-                    </mesh>
                     
-                    {/* HITBOX INVISIBLE GRANDE (Para hacer clic fácil) */}
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.3, 0.03, 0.1]}>
-                        <planeGeometry args={[0.8, 0.8]} />
+                    {/* HITBOX */}
+                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.55, 0.05, 0]}>
+                        <planeGeometry args={[0.4, 1.2]} />
                         <meshBasicMaterial visible={false} />
                     </mesh>
                 </group>
 
-                {/* D. GRUPO ANTI-HORARIO (Rosa Neón) */}
+                {/* Grupo antihorario (CCW) */}
                 <group 
-                    position={[0, 0, 0]}
                     onClick={(e) => { e.stopPropagation(); onMove(`${label}'`); }}
                     onPointerOver={() => { setHovered('ccw'); document.body.style.cursor = 'pointer'; }}
                     onPointerOut={() => { setHovered(null); document.body.style.cursor = 'auto'; }}
                 >
-                    {/* Flecha visible */}
-                    <mesh geometry={arrowCurveGeometry} rotation={[-Math.PI / 2, 0, Math.PI * 0.7]} position={[0, 0.05, 0]}>
+                    <mesh 
+                        geometry={arrowGeometry} 
+                        rotation={[-Math.PI / 2, 0, Math.PI / 2]} 
+                        position={[0, 0.05, 0]}
+                    >
                         <meshStandardMaterial 
                             color="#FF7EB9" 
                             emissive="#FF7EB9" 
-                            emissiveIntensity={hovered === 'ccw' ? 5 : 2} // Feedback visual
+                            emissiveIntensity={hovered === 'ccw' ? 4 : 1.5}
+                            roughness={0.2}
+                            metalness={0.5}
                         />
                     </mesh>
-                    {/* Punta de la flecha */}
-                    <mesh position={[-0.45, 0.05, 0.3]} rotation={[0, Math.PI / 4, 0]}>
-                        <coneGeometry args={[0.06, 0.12, 4]} />
-                        <meshStandardMaterial color="#FF7EB9" emissive="#FF7EB9" emissiveIntensity={2} />
-                    </mesh>
 
-                    {/* HITBOX INVISIBLE GRANDE (Para hacer clic fácil) */}
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.3, 0.03, 0.1]}>
-                        <planeGeometry args={[0.8, 0.8]} />
+                    {/* HITBOX */}
+                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.55, 0.05, 0]}>
+                        <planeGeometry args={[0.4, 1.2]} />
                         <meshBasicMaterial visible={false} />
                     </mesh>
                 </group>
