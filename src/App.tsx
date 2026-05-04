@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Canvas } from "@react-three/fiber"
 import { ScrollControls, Scroll } from "@react-three/drei"
 
@@ -13,6 +13,8 @@ import MainScene from "./scenes/MainScene"
 
 import { createCubeModel } from "./logic/cubeModel"
 import type { MoveType } from "./types/cube.types"
+
+import { checkerboardPattern, sexyMovePattern } from "./data/cubePatterns"
 
 
 function App() {
@@ -35,6 +37,29 @@ function App() {
 
   // Estado para mover mi cubo a medida de que se mueve los diferente projectos
   const [projectIndex, setProjectIndex] = useState(0)
+
+  // estado para patrones del cubo 
+  const [patternQueue, setPatternQueue] = useState<MoveType[]>([])
+
+  useEffect(()=>{
+    if(activeSection === "about"){
+      setPatternQueue(sexyMovePattern)
+
+    }else {
+      setPatternQueue([])
+    }
+  },[activeSection])
+
+  useEffect(()=> {
+    if(!isAnimating && patternQueue.length > 0){
+      const nextMove = patternQueue[0]
+
+      setMove(nextMove)
+      setIsAnimating(true)
+
+      setPatternQueue(prev => prev.slice(1))
+    }
+  },[isAnimating, patternQueue, setMove, setIsAnimating])
 
   const scrollToSection = (id: string) => {
 
