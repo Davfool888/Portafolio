@@ -1,26 +1,12 @@
 import { useEffect } from "react"
 
 type Props = {
-  setActiveSection?: (id: string) => void
+  setActiveSection?: (id: string) => void 
 }
 
 export default function PlaySection({ setActiveSection }: Props) {
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && setActiveSection) {
-          setActiveSection("play")
-        }
-      },
-      { threshold: 0.5 }
-    )
 
-    const el = document.getElementById("play")
-    if (el) observer.observe(el)
-
-    return () => observer.disconnect()
-  }, [setActiveSection])
 
   return (
     <section

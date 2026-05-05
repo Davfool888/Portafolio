@@ -9,19 +9,7 @@ type Props = {
 
 export default function HomeSection({ setActiveSection }: Props) {
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && setActiveSection) {
-          setActiveSection("home")
-        }
-      },
-      { threshold: 0.5 }
-    )
-    const el = document.getElementById("home")
-    if (el) observer.observe(el)
-    return () => observer.disconnect()
-  }, [setActiveSection])
+ 
 
   const skills = [
     { icon: "⚛️", name: "React", color: "bg-purple-200" },

@@ -5,19 +5,7 @@ type Props = {
 }
 
 export default function ContactSection({ setActiveSection }: Props) {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && setActiveSection) {
-          setActiveSection("contact")
-        }
-      },
-      { threshold: 0.5 }
-    )
-    const el = document.getElementById("contact")
-    if (el) observer.observe(el)
-    return () => observer.disconnect()
-  }, [setActiveSection])
+   
 
   return (
     <section

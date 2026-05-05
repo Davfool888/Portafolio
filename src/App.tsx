@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Canvas } from "@react-three/fiber"
 import { ScrollControls, Scroll } from "@react-three/drei"
 
@@ -14,8 +14,16 @@ import MainScene from "./scenes/MainScene"
 import { createCubeModel } from "./logic/cubeModel"
 import type { MoveType } from "./types/cube.types"
 
-import { checkerboardPattern, sexyMovePattern } from "./data/cubePatterns"
+import { checkerboardPattern, checkerboardPatternInverse, interChangeCubeMid, interChangeCubeMidInverse, turntwofortwo, turntwofortwoInverse, Tpatron, TpatronInverse } from "./data/cubePatterns"
 
+
+
+
+const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
+  [checkerboardPattern, checkerboardPatternInverse],
+  [turntwofortwo, turntwofortwoInverse],
+  [Tpatron, TpatronInverse],
+]
 
 function App() {
 
@@ -24,6 +32,8 @@ function App() {
 
   // Estado para mover los colores de los index del navbar y asi saber en que seccion se esta posicionado
   const [activeSection, setActiveSection] = useState("home")
+  // Estado de scroll
+  const [scrollReady, setScrollReady] =useState(false)
 
   // estado para expandir el cubo
   const [explode, setExplode] = useState(false)
@@ -38,20 +48,70 @@ function App() {
   // Estado para mover mi cubo a medida de que se mueve los diferente projectos
   const [projectIndex, setProjectIndex] = useState(0)
 
-  // estado para patrones del cubo 
+  // estado para patrones del cubo se ejecuten cuando lleguen al WorkSection
   const [patternQueue, setPatternQueue] = useState<MoveType[]>([])
+  // estado para intercambiar los patrones del cubo cada 10s
+  const [aboutPatternIndex, setAboutPatternIndex] = useState(0)
+  // estados de ejecucion, mostrando patron actual- ejecutando inverso- ejecutando nuevo patron
+  const [aboutPhase, setAboutPhase] = useState<"idle" | "playing" | "undoing">("idle")
 
-  useEffect(()=>{
-    if(activeSection === "about"){
-      setPatternQueue(sexyMovePattern)
 
-    }else {
+  const scrollElRef = useRef<HTMLElement | null>(null)
+
+  const totalPages = 5
+
+  // Reajuste de scroll para arreglar bug de no change of section
+  const sectionOffsets: Record<string, number> = {
+    home: 0 / totalPages,
+    work: 1 / totalPages,
+    about: 2 / totalPages,
+    contact: 3 / totalPages,
+    play: 4 / totalPages,
+  }
+
+  // UseEfects para logica del cubo en AboutSection (este carga los patrones, estados y movimientos iniciales)
+  useEffect(() => {
+    if (activeSection === "about") {
+      const [firstPattern] = ABOUT_PATTERNS[0]
+      setAboutPatternIndex(0)
+      setAboutPhase("playing")
+      setPatternQueue(firstPattern)
+
+    } else {
+      setAboutPhase("idle")
       setPatternQueue([])
     }
-  },[activeSection])
+  }, [activeSection])
 
-  useEffect(()=> {
-    if(!isAnimating && patternQueue.length > 0){
+  // Este se encarga del temporizador, despues de que el temporizador termine los 10s, cambiar el estaado a inversePattern
+  useEffect(() => {
+    if (activeSection !== "about" || aboutPhase !== "playing") return
+
+    const timer = setTimeout(() => {
+      const [, inversePattern] = ABOUT_PATTERNS[aboutPatternIndex]
+      setAboutPhase("undoing")
+      setPatternQueue(inversePattern)
+    }, 10_000)
+
+    return () => clearTimeout(timer)
+  }, [activeSection, aboutPhase, aboutPatternIndex])
+
+  useEffect(() => {
+    if (activeSection !== "about" || aboutPhase !== "undoing") return
+    if (patternQueue.length > 0 || isAnimating) return
+
+    const nextIndex = (aboutPatternIndex + 1) % ABOUT_PATTERNS.length
+
+    const [nextPattern] = ABOUT_PATTERNS[nextIndex]
+    setAboutPatternIndex(nextIndex)
+    setAboutPhase("playing")
+    setPatternQueue(nextPattern)
+  }, [activeSection, aboutPhase, patternQueue.length, isAnimating, aboutPatternIndex])
+
+
+  // Este se encarga de ejecutar los movimiento en todo el cubo
+  useEffect(() => {
+    if (!isAnimating && patternQueue.length > 0) {
       const nextMove = patternQueue[0]
 
       setMove(nextMove)
@@ -59,14 +119,41 @@ function App() {
 
       setPatternQueue(prev => prev.slice(1))
     }
-  },[isAnimating, patternQueue, setMove, setIsAnimating])
+  }, [isAnimating, patternQueue, setMove, setIsAnimating])
+
+
+  useEffect(() => {
+  const el = scrollElRef.current
+  if (!el) return
+  const handleScroll = () => {
+    const offset = el.scrollTop / el.scrollHeight
+    if (offset < 0.2)       setActiveSection("home")
+    else if (offset < 0.4)  setActiveSection("work")
+    else if (offset < 0.6)  setActiveSection("about")
+    else if (offset < 0.8)  setActiveSection("contact")
+    else                    setActiveSection("play")
+  }
+  el.addEventListener("scroll", handleScroll)
+  return () => el.removeEventListener("scroll", handleScroll)
+}, [scrollReady]) 
+
+
+
 
   const scrollToSection = (id: string) => {
 
-    const el = document.getElementById(id)
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" })
-    }
+    if (!scrollElRef.current) return
+
+    const offset = sectionOffsets[id]
+    if (offset === undefined) return
+
+    const targetScrolltop = offset * scrollElRef.current.scrollHeight
+
+    scrollElRef.current.scrollTo({
+      top: targetScrolltop,
+      behavior: "smooth"
+    })
+
   }
 
 
@@ -104,15 +191,17 @@ function App() {
               setMove={setMove}
               projectIndex={projectIndex}
               setProjectIndex={setProjectIndex}
+              scrollElRef={scrollElRef}
+              onScrollReady={() => setScrollReady(true)} 
             />
 
             <Scroll html style={{ width: '100vw' }}>
               <div className="pointer-events-auto">
-                <HomeSection setActiveSection={setActiveSection} />
-                <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex}/>
-                <AboutSection setActiveSection={setActiveSection} />
-                <ContactSection setActiveSection={setActiveSection} />
-                <PlaySection setActiveSection={setActiveSection} />
+                <HomeSection setActiveSection={setActiveSection}  />
+                <WorkSection setActiveSection={setActiveSection}  projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
+                <AboutSection setActiveSection={setActiveSection}  />
+                <ContactSection setActiveSection={setActiveSection}  />
+                <PlaySection setActiveSection={setActiveSection}  />
               </div>
             </Scroll>
 

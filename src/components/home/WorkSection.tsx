@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 type Props = {
   setActiveSection?: (id: string) => void
   projectIndex: number
-  setProjectIndex: (index: number | ((prev: number) => number)) => void; 
+  setProjectIndex: (index: number | ((prev: number) => number)) => void;
 }
 
 export default function WorkSection({ setActiveSection, projectIndex, setProjectIndex }: Props) {
@@ -60,22 +60,7 @@ export default function WorkSection({ setActiveSection, projectIndex, setProject
   }
 
 
-  // Efecto para activar o desactivar seccion a traves del navbar
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && setActiveSection) {
-          setActiveSection("work")
-        }
-      },
-      { threshold: 0.5 }
-    )
-    const el = document.getElementById("work")
-    if (el) observer.observe(el)
-    return () => observer.disconnect()
-  }, [setActiveSection])
-
-
+  
 
   return (
     <section

@@ -21,9 +21,11 @@ type MainSceneProps = {
 
     projectIndex: number
     setProjectIndex: React.Dispatch<React.SetStateAction<number>>
+    scrollElRef: React.MutableRefObject<HTMLElement | null>
+    onScrollReady: () => void
 }
 
-export default function MainScene({ cubies, explode, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove, projectIndex, setProjectIndex }: MainSceneProps) {
+export default function MainScene({ cubies, explode, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove, projectIndex, setProjectIndex, scrollElRef, onScrollReady}: MainSceneProps) {
     
     const executeMove = (move: string) => {
         if(isAnimating) return
@@ -35,9 +37,13 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
     const scroll = useScroll()
 
     useFrame(() => {
-        if (!scroll || !controlsRef.current) return
+       if (!scroll || !controlsRef.current) return
         const offset = scroll.offset
-        // Disable controls in WorkSection (offset 0.2 to 0.4)
+       
+        if (scrollElRef.current !== scroll.el) {
+            scrollElRef.current = scroll.el
+            onScrollReady()
+        }
         if (offset >= 0.2 && offset < 0.4) {
             controlsRef.current.enabled = false
         } else {
