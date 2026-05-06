@@ -21,6 +21,7 @@ import { checkerboardPattern, checkerboardPatternInverse, interChangeCubeMid, in
 
 const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
   [checkerboardPattern, checkerboardPatternInverse],
+  [interChangeCubeMid, interChangeCubeMidInverse],
   [turntwofortwo, turntwofortwoInverse],
   [Tpatron, TpatronInverse],
 ]
@@ -33,7 +34,7 @@ function App() {
   // Estado para mover los colores de los index del navbar y asi saber en que seccion se esta posicionado
   const [activeSection, setActiveSection] = useState("home")
   // Estado de scroll
-  const [scrollReady, setScrollReady] =useState(false)
+  const [scrollReady, setScrollReady] = useState(false)
 
   // estado para expandir el cubo
   const [explode, setExplode] = useState(false)
@@ -123,19 +124,19 @@ function App() {
 
 
   useEffect(() => {
-  const el = scrollElRef.current
-  if (!el) return
-  const handleScroll = () => {
-    const offset = el.scrollTop / el.scrollHeight
-    if (offset < 0.2)       setActiveSection("home")
-    else if (offset < 0.4)  setActiveSection("work")
-    else if (offset < 0.6)  setActiveSection("about")
-    else if (offset < 0.8)  setActiveSection("contact")
-    else                    setActiveSection("play")
-  }
-  el.addEventListener("scroll", handleScroll)
-  return () => el.removeEventListener("scroll", handleScroll)
-}, [scrollReady]) 
+    const el = scrollElRef.current
+    if (!el) return
+    const handleScroll = () => {
+      const offset = el.scrollTop / el.scrollHeight
+      if (offset < 0.2) setActiveSection("home")
+      else if (offset < 0.4) setActiveSection("work")
+      else if (offset < 0.6) setActiveSection("about")
+      else if (offset < 0.8) setActiveSection("contact")
+      else setActiveSection("play")
+    }
+    el.addEventListener("scroll", handleScroll)
+    return () => el.removeEventListener("scroll", handleScroll)
+  }, [scrollReady])
 
 
 
@@ -172,6 +173,8 @@ function App() {
           sections={sections}
           onNavigate={scrollToSection}
           activeSection={activeSection}
+          scrollElRef={scrollElRef}
+          scrollReady={scrollReady}
         />
       </div>
 
@@ -192,16 +195,17 @@ function App() {
               projectIndex={projectIndex}
               setProjectIndex={setProjectIndex}
               scrollElRef={scrollElRef}
-              onScrollReady={() => setScrollReady(true)} 
+              onScrollReady={() => setScrollReady(true)}
+              activeSection={activeSection}
             />
 
             <Scroll html style={{ width: '100vw' }}>
               <div className="pointer-events-auto">
-                <HomeSection setActiveSection={setActiveSection}  />
-                <WorkSection setActiveSection={setActiveSection}  projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
-                <AboutSection setActiveSection={setActiveSection}  />
-                <ContactSection setActiveSection={setActiveSection}  />
-                <PlaySection setActiveSection={setActiveSection}  />
+                <HomeSection setActiveSection={setActiveSection} />
+                <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
+                <AboutSection setActiveSection={setActiveSection} />
+                <ContactSection setActiveSection={setActiveSection} />
+                <PlaySection setActiveSection={setActiveSection} />
               </div>
             </Scroll>
 
