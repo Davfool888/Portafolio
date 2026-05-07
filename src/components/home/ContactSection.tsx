@@ -13,9 +13,13 @@ export default function ContactSection({ setActiveSection }: Props) {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    messege: "",
+    message: "",
     contactMethod: "email"
   })
+
+  // Estados  de interfaz de carga
+  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
 
   const handleMethodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
@@ -31,9 +35,29 @@ export default function ContactSection({ setActiveSection }: Props) {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(form)
+
+    setLoading(true)
+    setStatus("idle")
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+      console.log("Form enviado", form)
+      setStatus("success")
+
+      setForm({
+        name: "",
+        email: "",
+        message: "",
+        contactMethod: "email"
+      })
+    } catch (error) {
+      setStatus("error")
+
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -81,64 +105,67 @@ export default function ContactSection({ setActiveSection }: Props) {
                 name='email'
                 placeholder='Email'
                 value={form.email}
-                 className="px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-purple-300"
+                className="px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-purple-300"
                 onChange={handleChange}
               />
             </div>
 
 
             <textarea
-              name="messege"
+              name="message"
               placeholder='Messenge'
-              value={form.messege}
+              value={form.message}
               onChange={handleChange}
               rows={5}
               required
               className="px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none"
             />
 
+
+            {/* Method */}
+
             <div>
               <p className="text-sm text-gray-600 mb-2">
-                Preferred contact method: 
+                Preferred contact method:
               </p>
 
               <div className="flex gap-6">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                  type="radio" 
-                  value="email"
-                  checked={form.contactMethod === "email"}
-                  onChange={handleMethodChange}
-                  />
-                  Email
-                </label>
-
-                <label className="flex items-center gap-2 cursor-pointer">
+                {["email", "whatsapp", "linkedin"].map((method)=>(
+                  <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
-                    value="whatsapp"
-                    checked={form.contactMethod === "whatsapp"}
+                    value={method}
+                    checked={form.contactMethod === method}
                     onChange={handleMethodChange}
+                    disabled={loading}
                   />
-                  WhatsApp
+                 {method}
                 </label>
-
-                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    value="linkedin"
-                    checked={form.contactMethod === "linkedin"}
-                    onChange={handleMethodChange}
-                  />
-                  LinkedIn
-                </label>
+                ))}
+                
               </div>
             </div>
 
-            <button type='submit' className="bg-purple-500 text-white py-3 rounded-xl hover:bg-purple-600 transition">
-              Send
+            <button 
+            type='submit' 
+            disabled={loading}
+            className="bg-purple-500 text-white py-3 rounded-xl hover:bg-purple-600 transition"
+            >
+              {loading ? "Sending.." : "Send Message"}
             </button>
+            
+            {/* Feedback */}
+              {status === "success" &&(
+                <p className='text-green-500 text-sm'>
+                  Message sent successfully
+                </p>
+              )}
 
+              {status === "error" &&(
+                <p className='text-red-500 text-sm'>
+                  Something went wrong, Try again. 
+                </p>
+              )}
 
           </form>
         </div>

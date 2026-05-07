@@ -78,9 +78,12 @@ function App() {
       setAboutPhase("playing")
       setPatternQueue(firstPattern)
 
+      setIsRotate(true)
+
     } else {
       setAboutPhase("idle")
       setPatternQueue([])
+      setIsRotate(false)
     }
   }, [activeSection])
 
@@ -203,7 +206,7 @@ function App() {
               <div className="pointer-events-auto">
                 <HomeSection setActiveSection={setActiveSection} />
                 <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
-                <AboutSection setActiveSection={setActiveSection} />
+                <AboutSection setActiveSection={setActiveSection}  setIsRotate={ setIsRotate} isRotate={isRotate} />
                 <ContactSection setActiveSection={setActiveSection} />
                 <PlaySection setActiveSection={setActiveSection} />
               </div>

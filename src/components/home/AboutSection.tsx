@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import RotationCube from '../cube/RotationCube'
 
 type Props = {
   setActiveSection?: (id: string) => void
+  isRotate?: boolean
+  setIsRotate?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const CARDS_DATA = [
@@ -12,29 +15,29 @@ const CARDS_DATA = [
   { id: 5, title: "Cursos", description: "Estudio en la academia virtual de tecnologia Platzi, reforzando mis conocimientos en logica de programacion y aprendiendo nuevas tecnologias como Angula, React, NodeJs, Python entre otras. ", color: "bg-pink-50/80" }
 ]
 
-export default function AboutSection({ setActiveSection }: Props) {
+export default function AboutSection({ setActiveSection, setIsRotate, isRotate }: Props) {
   // Const for the infinity stacked carousel
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const handleNextCard = () =>{
-    setActiveIndex((prevIndex) => (prevIndex + 1 ) % CARDS_DATA.length)
+  const handleNextCard = () => {
+    setActiveIndex((prevIndex) => (prevIndex + 1) % CARDS_DATA.length)
   }
 
-  const handlePrevCard = () =>{
-    setActiveIndex((prevIndex) => (prevIndex - 1 + CARDS_DATA.length ) % CARDS_DATA.length)
+  const handlePrevCard = () => {
+    setActiveIndex((prevIndex) => (prevIndex - 1 + CARDS_DATA.length) % CARDS_DATA.length)
   }
 
-  const getRelativeOffset = (index: number, currentActive: number, totalCards: number ) =>{
+  const getRelativeOffset = (index: number, currentActive: number, totalCards: number) => {
     let offset = (index - currentActive) % totalCards
 
-    if(offset > Math.floor(totalCards / 2)){
+    if (offset > Math.floor(totalCards / 2)) {
       offset -= totalCards
-    } else if ( offset < -Math.floor(totalCards/2)){
+    } else if (offset < -Math.floor(totalCards / 2)) {
       offset += totalCards
     }
     return offset
   }
-  
+
   return (
     <section
       id="about"
@@ -42,30 +45,38 @@ export default function AboutSection({ setActiveSection }: Props) {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-purple-100/10 via-transparent to-cyan-100/10 pointer-events-none" />
       <div className="container mx-auto px-8 w-full h-full grid grid-cols-3 gap-8 z-10 pointer-events-none">
-        
+
         <div className="col-span-1 pointer-events-none" />
         <div className="col-span-2 flex flex-col justify-center items-center pointer-events-auto h-full">
-          
-          <h2 className="text-5xl font-bold text-gray-800 mb-12 self-start pl-8">
-            About Me
-          </h2>
+
+          <div className="self-start pl-8 mb-12 flex items-center gap-6">
+            <h2 className="text-5xl font-bold text-gray-800 m-0">
+              About Me
+            </h2>
+
+            {isRotate !== undefined && setIsRotate && (
+              <div className="pointer-events-auto">
+                <RotationCube isRotate={isRotate} setIsRotate={setIsRotate} />
+              </div>
+            )}
+          </div>
 
           {/* carousel container div */}
           <div className="relative w-full h-[500px] flex justify-center items-center perspective-1000">
-            
+
             {CARDS_DATA.map((card, index) => {
-              
-   
+
+
               const offset = getRelativeOffset(index, activeIndex, CARDS_DATA.length)
-              
+
               const isCenter = offset === 0
-              const isVisible = Math.abs(offset) <= 2 
-              
-         
-              const translateX = offset * 110 
-              const scale = 1 - Math.abs(offset) * 0.15 
-              const zIndex = CARDS_DATA.length - Math.abs(offset) 
-              const opacity = Math.abs(offset) > 1 ? 0.3 : 1 
+              const isVisible = Math.abs(offset) <= 2
+
+
+              const translateX = offset * 110
+              const scale = 1 - Math.abs(offset) * 0.15
+              const zIndex = CARDS_DATA.length - Math.abs(offset)
+              const opacity = Math.abs(offset) > 1 ? 0.3 : 1
               return (
                 <div
                   key={card.id}
@@ -73,9 +84,9 @@ export default function AboutSection({ setActiveSection }: Props) {
                     if (offset === 1) handleNextCard()
                     if (offset === -1) handlePrevCard()
                   }}
-        
+
                   className={`absolute w-72 h-96 p-8 rounded-3xl shadow-xl border border-white/40 backdrop-blur-lg transition-all duration-500 ease-out flex flex-col ${card.color} ${!isCenter ? 'cursor-pointer hover:border-white/80 hover:shadow-2xl' : ''}`}
-                  
+
                   style={{
                     transform: `translateX(${translateX}px) scale(${scale})`,
                     zIndex,
@@ -88,10 +99,10 @@ export default function AboutSection({ setActiveSection }: Props) {
                   <p className="text-lg text-gray-600 flex-grow">
                     {card.description}
                   </p>
-                  
+
                   {isCenter && (
                     <div className="text-sm font-semibold text-gray-400 mt-auto text-center animate-pulse">
-                       Click sides to navigate
+                      Click sides to navigate
                     </div>
                   )}
                 </div>

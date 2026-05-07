@@ -6,6 +6,7 @@ import type { Cubie } from "../logic/cubeModel"
 import MoveControl from "../components/cube/rotationFaces/MoveControl"
 import type { MoveType } from "../types/cube.types"
 import ScrollCubeController from "../components/cube/ScrollCubeController"
+import { Quaternion, Group } from "three"
 
 type MainSceneProps = {
     cubies: Cubie[]
@@ -35,9 +36,12 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
     }
 
     const controlsRef = useRef<any>(null)
+    const spinGroupRef = useRef<Group>(null)
     const scroll = useScroll()
 
-    useFrame(() => {
+
+
+    useFrame((state, delta) => {
         if (!scroll || !controlsRef.current) return
         const offset = scroll.offset
 
@@ -45,10 +49,22 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
             scrollElRef.current = scroll.el
             onScrollReady()
         }
-        if (offset >= 0.2 && offset < 0.4) {
+
+
+        if (offset >= 0.2 && offset < 0.6) {
             controlsRef.current.enabled = false
         } else {
             controlsRef.current.enabled = true
+        }
+
+        if(spinGroupRef.current){
+            if(isRotate){
+                spinGroupRef.current.rotation.x += delta * 0.3
+                spinGroupRef.current.rotation.y += delta * 0.4
+            }else{
+                const targetQuat = new Quaternion()
+                spinGroupRef.current.quaternion.slerp(targetQuat, delta * 4)
+            }
         }
     })
 
@@ -58,6 +74,8 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
             <directionalLight position={[5, 5, 5]} intensity={1} />
 
             <ScrollCubeController cubies={cubies} projectIndex={projectIndex} setProjectIndex={setProjectIndex}>
+                
+                <group ref={spinGroupRef}>
                 <RubikCube
                     explode={explode}
                     cubies={cubies}
@@ -66,7 +84,8 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
                     setCubies={setCubies}
                     setIsAnimating={setIsAnimating}
                     setMove={setMove}
-                />
+                /> 
+                </group>
 
                 {activeSection === "play" && (
                     <>
