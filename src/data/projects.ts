@@ -5,28 +5,38 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    title: "AI Clash of Clans",
-    description: "IA que analiza aldeas y recomienda ataques óptimos."
-  },
-  {
-    title: "Vision Drone AI",
-    description: "IA que detecta objetos en tiempo real desde drones."
-  },
-  {
-    title: "Auto Trading Bot",
-    description: "Bot que analiza el mercado y ejecuta operaciones."
+    title: "Frontend for Real-Time Structure Detection",
+    description:
+      "Frontend desarrollado en React para visualización en tiempo real de detección de estructuras mediante modelos de visión computacional e integración con APIs de inferencia IA."
   },
 
   {
-    title: "3D Portfolio Engine",
-    description: "Portafolio interactivo en 3D con navegación basada en scroll y animaciones físicas."
+    title: "AI Inference Backend",
+    description:
+      "Backend construido con FastAPI encargado del procesamiento de imágenes, análisis táctico y comunicación con modelos de inteligencia artificial para reconocimiento de objetos y generación de inferencias en tiempo real."
   },
+
   {
-    title: "Smart Video Clipper AI",
-    description: "IA que detecta momentos clave en videos largos y genera clips optimizados para redes."
+    title: "Computer Vision Training Pipeline",
+    description:
+      "Pipeline de entrenamiento y clasificación de objetos utilizando YOLOv8 para detección de estructuras, calibración de parámetros y optimización de datasets mediante técnicas de computer vision."
   },
+
   {
-    title: "Real-Time Face Tracker",
-    description: "Sistema de visión computacional que detecta y sigue rostros en tiempo real."
+    title: "DevOps Inventory System",
+    description:
+      "Arquitectura contenerizada para un sistema de inventario con automatización de pipelines CI/CD, despliegue mediante Docker Compose, pruebas automatizadas e integración continua con Jenkins."
+  },
+
+  {
+    title: "Smart Inventory Management System",
+    description:
+      "Sistema de inventario orientado a tiendas, bares y empresas, enfocado en gestión de productos, control de stock y arquitectura escalable para entornos empresariales."
+  },
+
+  {
+    title: "E-Commerce Fashion Store",
+    description:
+      "Tienda online desarrollada en Shopify para comercialización de prendas de vestir, integrando catálogo de productos, personalización visual y experiencia optimizada para ventas digitales."
   }
 ]
