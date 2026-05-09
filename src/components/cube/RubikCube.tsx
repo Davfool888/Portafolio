@@ -62,6 +62,10 @@ export default function RubikCube({
                 case "D": return rotateCubeFace(prev, "y", -1, (-direction as 1 | -1))
                 case "L": return rotateCubeFace(prev, "x", -1, (-direction as 1 | -1))
                 case "B": return rotateCubeFace(prev, "z", -1, (-direction as 1 | -1))
+                // Rotaciones de las capas medias "2"
+                case "M": return rotateCubeFace(prev, "x", 0, (-direction as 1 | -1))
+                case "N": return rotateCubeFace(prev, "y", 0, (-direction as 1 | -1))
+                case "W": return rotateCubeFace(prev, "z", 0, direction)
                 default: return prev
             }
         })
@@ -93,6 +97,10 @@ export default function RubikCube({
                 const isLeft = c.position[0] === -1
                 const isDown = c.position[1] === -1
                 const isBack = c.position[2] == -1
+                // const para las capas medias
+                const isMiddleX = c.position[0] === 0
+                const isMiddleY = c.position[1] === 0
+                const isMiddleZ = c.position[2] === 0
 
                 if (isAnimating) {
 
@@ -103,49 +111,62 @@ export default function RubikCube({
                     if (move?.startsWith("U") && isTop) {
                         const q = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), animAngle)
                         const rot = new Matrix4().makeRotationFromQuaternion(q)
-                        matrix = matrix.clone().premultiply(rot)                       
+                        matrix = matrix.clone().premultiply(rot)
                     }
 
-                     if (move?.startsWith("F") && isFront) {
+                    if (move?.startsWith("F") && isFront) {
                         const q = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), animAngle)
                         const rot = new Matrix4().makeRotationFromQuaternion(q)
-                        matrix = matrix.clone().premultiply(rot)                       
+                        matrix = matrix.clone().premultiply(rot)
                     }
 
-                     if (move?.startsWith("R") && isRight) {
+                    if (move?.startsWith("R") && isRight) {
                         const q = new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), animAngle)
                         const rot = new Matrix4().makeRotationFromQuaternion(q)
-                        matrix = matrix.clone().premultiply(rot)                       
+                        matrix = matrix.clone().premultiply(rot)
                     }
 
                     if (move?.startsWith("L") && isLeft) {
                         const q = new Quaternion().setFromAxisAngle(new Vector3(-1, 0, 0), animAngle)
                         const rot = new Matrix4().makeRotationFromQuaternion(q)
-                        matrix = matrix.clone().premultiply(rot)                       
+                        matrix = matrix.clone().premultiply(rot)
                     }
 
                     if (move?.startsWith("D") && isDown) {
                         const q = new Quaternion().setFromAxisAngle(new Vector3(0, -1, 0), animAngle)
                         const rot = new Matrix4().makeRotationFromQuaternion(q)
-                        matrix = matrix.clone().premultiply(rot)                       
+                        matrix = matrix.clone().premultiply(rot)
                     }
 
                     if (move?.startsWith("B") && isBack) {
                         const q = new Quaternion().setFromAxisAngle(new Vector3(0, 0, -1), animAngle)
                         const rot = new Matrix4().makeRotationFromQuaternion(q)
-                        matrix = matrix.clone().premultiply(rot)                       
+                        matrix = matrix.clone().premultiply(rot)
                     }
-        
+
+                    if (move?.startsWith("M") && isMiddleX) {
+                        const q = new Quaternion().setFromAxisAngle(new Vector3(-1, 0, 0), animAngle);
+                        matrix = matrix.clone().premultiply(new Matrix4().makeRotationFromQuaternion(q));
+                    }
+                    if (move?.startsWith("N") && isMiddleY) {
+                        const q = new Quaternion().setFromAxisAngle(new Vector3(0, -1, 0), animAngle);
+                        matrix = matrix.clone().premultiply(new Matrix4().makeRotationFromQuaternion(q));
+                    }
+                    if (move?.startsWith("W") && isMiddleZ) {
+                        const q = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), animAngle);
+                        matrix = matrix.clone().premultiply(new Matrix4().makeRotationFromQuaternion(q));
+                    }
+
 
                 }
 
-            return (
-            <CubePiece
-                key={c.id}
-                matrix={matrix}
-                colors={c.colors}
-            />
-            )
+                return (
+                    <CubePiece
+                        key={c.id}
+                        matrix={matrix}
+                        colors={c.colors}
+                    />
+                )
             })}
         </group>
     )

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import RotationCube from '../cube/RotationCube'
 import { transform } from 'framer-motion'
 import { div } from 'three/tsl'
 
 type Props = {
   setActiveSection?: (id: string) => void
-  isRotate?: boolean
-  setIsRotate?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const CARDS_DATA = [
@@ -54,7 +51,7 @@ const CARDS_DATA = [
 
 
 
-export default function AboutSection({ setActiveSection, setIsRotate, isRotate }: Props) {
+export default function AboutSection({ setActiveSection }: Props) {
 
 
   // Const for the infinity stacked carousel
@@ -177,13 +174,7 @@ export default function AboutSection({ setActiveSection, setIsRotate, isRotate }
             <h2 className="text-5xl font-bold text-gray-800 m-0">
               About Me
             </h2>
-
-            {isRotate !== undefined && setIsRotate && (
-              <div className="pointer-events-auto">
-                <RotationCube isRotate={isRotate} setIsRotate={setIsRotate} />
-              </div>
-            )}
-          </div>
+            </div>
 
           {/* carousel container div */}
           <div className="relative w-full h-[500px] flex justify-center items-center perspective-1000">
