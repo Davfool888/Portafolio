@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import { Canvas } from "@react-three/fiber"
 import { ScrollControls, Scroll } from "@react-three/drei"
 
@@ -15,7 +15,7 @@ import { createCubeModel } from "./logic/cubeModel"
 import type { MoveType } from "./types/cube.types"
 
 import { checkerboardPattern, checkerboardPatternInverse, interChangeCubeMid, interChangeCubeMidInverse, turntwofortwo, turntwofortwoInverse, Tpatron, TpatronInverse } from "./data/cubePatterns"
-
+import { getInverseMove } from "./logic/historyManager"
 
 
 
@@ -55,6 +55,46 @@ function App() {
   const [aboutPatternIndex, setAboutPatternIndex] = useState(0)
   // estados de ejecucion, mostrando patron actual- ejecutando inverso- ejecutando nuevo patron
   const [aboutPhase, setAboutPhase] = useState<"idle" | "playing" | "undoing">("idle")
+
+  // Nuevos estados para sincronizacion de transiciones con cube moves, historyStack para llevar un registros de los movimientos ejecutados en home y isUndoing, para saber si el cubo esta viajando en el tiempo hacia atras
+
+
+  const [homeCycle, setHomeCycle] = useState(0)
+
+  const triggerHomeCycle = useCallback((direction: 1 | -1 = 1) => {
+    setHomeCycle(prev => prev + direction)
+
+    if (direction === 1) {
+      setPatternQueue(q => [...q, "U", "D'", "N", "L", "R'"])
+    } else {
+      setPatternQueue(q => [...q, "R", "L'", "N'", "D", "U'"])
+    }
+  }, [])
+
+  useEffect(() => {
+    if (activeSection !== "home") {
+      const currentMod = ((homeCycle % 12) + 12) % 12
+      if (currentMod !== 0) {
+        const remaining = 12 - currentMod
+        const moves: MoveType[] = []
+
+        for (let i = 0; i < remaining; i++) {
+          moves.push("U", "D'", "N", "L", "R'")
+        }
+        setPatternQueue(q => [...q, ...moves])
+        setHomeCycle(prev => prev + remaining);
+      }
+      return
+    }
+
+    const interval = setInterval(() => {
+      triggerHomeCycle(1)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [activeSection, homeCycle, triggerHomeCycle])
+
+
+
 
 
   const scrollElRef = useRef<HTMLElement | null>(null)
@@ -105,6 +145,8 @@ function App() {
     return () => clearTimeout(timer)
   }, [activeSection, aboutPhase, aboutPatternIndex])
 
+
+
   useEffect(() => {
     if (activeSection !== "about" || aboutPhase !== "undoing") return
     if (patternQueue.length > 0 || isAnimating) return
@@ -117,18 +159,21 @@ function App() {
     setPatternQueue(nextPattern)
   }, [activeSection, aboutPhase, patternQueue.length, isAnimating, aboutPatternIndex])
 
-
   // Este se encarga de ejecutar los movimiento en todo el cubo
   useEffect(() => {
     if (!isAnimating && patternQueue.length > 0) {
       const nextMove = patternQueue[0]
-
       setMove(nextMove)
       setIsAnimating(true)
-
       setPatternQueue(prev => prev.slice(1))
     }
   }, [isAnimating, patternQueue, setMove, setIsAnimating])
+
+
+
+
+
+
 
 
   useEffect(() => {
@@ -209,7 +254,7 @@ function App() {
 
             <Scroll html style={{ width: '100vw' }}>
               <div className="pointer-events-auto">
-                <HomeSection setActiveSection={setActiveSection} />
+                <HomeSection setActiveSection={setActiveSection}  homeCycle={homeCycle} triggerHomeCycle={triggerHomeCycle} />
                 <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
                 <AboutSection setActiveSection={setActiveSection} />
                 <ContactSection setActiveSection={setActiveSection} />

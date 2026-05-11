@@ -1,8 +1,14 @@
-import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { categoriesData } from "./categoriesData";
+import type { MoveType } from "../types/cube.types";
 
+type Props = {
+    setActiveSection?: (id: string) => void
+  homeCycle: number
+  triggerHomeCycle: (dir?: 1 | -1) => void
+}
 
 function ClaySkillCard({ icon, name, color }: { icon: string, name: string, color: string }) {
     return (
@@ -34,38 +40,21 @@ function ClaySkillCard({ icon, name, color }: { icon: string, name: string, colo
 }
 
 
-export default function RubikSkillsCarousel() {
+export default function RubikSkillsCarousel({homeCycle, triggerHomeCycle}: Props) {
 
-    const [currentIndex, setCurrentIndex] = useState(0)
-    const [direction, setDirection] = useState(1)
-    const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+    const dataSkills = categoriesData;
 
-    const dataSkills = categoriesData
+    // Calcular la dirección basada en el cambio del ciclo
+    const prevCycle = useRef(homeCycle);
+    const direction = homeCycle > prevCycle.current ? 1 : (homeCycle < prevCycle.current ? -1 : 1);
+    prevCycle.current = homeCycle;
 
+    // Indice sincronizado con el ciclo central
+    const currentIndex = ((homeCycle % dataSkills.length) + dataSkills.length) % dataSkills.length;
+    const currentCategory = dataSkills[currentIndex];
 
-    // Logica de navegacion con las flechas next a prev
-    const nextCategory = () => {
-        setDirection(1)
-        setCurrentIndex((prev) => (prev + 1) % dataSkills.length)
-    }
-
-    const prevCategory = () => {
-        setDirection(-1)
-        setCurrentIndex((prev) => (prev === 0 ? dataSkills.length - 1 : prev - 1))
-    }
-
-
-    // Auto activacion del movimiento de skills a tarves de la categoria cada 3s (unica exepcion, alguien pase el mause por encima)
-    useEffect(() => {
-        if (!isAutoPlaying) return
-        const interval = setInterval(nextCategory, 3000)
-        return () => clearInterval(interval)
-    }, [isAutoPlaying])
-
-    const currentCategory = dataSkills[currentIndex]
-
-    // const para darle apariencia de espontaniedad al movimiento arriba o abajo de las cards 
-    const flipDirection = currentIndex % 2 === 0
+    // Alternar dirección de rotación de las cartas
+    const flipDirection = homeCycle % 2 === 0;
 
 
     // Animacion de cubo
@@ -122,14 +111,10 @@ export default function RubikSkillsCarousel() {
 
 
     return (
-        <div
-            className="flex flex-col gap-8 w-full max-w-lg pointer-events-auto"
-            onMouseEnter={() => setIsAutoPlaying(false)}
-            onMouseLeave={() => setIsAutoPlaying(true)}
-        >
+        <div className="flex flex-col gap-8 w-full max-w-lg pointer-events-auto">
             <div className="flex items-center justify-between bg-white/20 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-lg border border-white/30">
                 <button
-                    onClick={prevCategory}
+                    onClick={() => triggerHomeCycle(-1)}
                     className="p-2 hover:bg-black/5 rounded-full transition-colors">
                     <ChevronLeft className="text-gray-700" size={24} />
                 </button>
@@ -152,7 +137,7 @@ export default function RubikSkillsCarousel() {
                 </div>
 
                 <button 
-                onClick={nextCategory}
+                onClick={() => triggerHomeCycle(1)}
                 className="p-2 hover:bg-black/5 rounded-full transition-colors">
                     <ChevronRight className="text-gray-700" size={24}/>
                 </button>

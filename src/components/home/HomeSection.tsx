@@ -1,25 +1,19 @@
 import { useEffect, useState } from 'react'
-import ProfilelImage from '../ui/ProfileImage'
 import ClayButton from '../ui/ClayButton'
 import SkillCard from '../ui/SkillCard'
 import RubikSkillsCarousel from '../../data/RubikSkillsCarousel'
 import { AnimatePresence, motion } from 'framer-motion'
+import type { MoveType } from '../../types/cube.types'
 
 type Props = {
   setActiveSection?: (id: string) => void
+  homeCycle: number
+  triggerHomeCycle: (dir?: 1 | -1) => void
 }
 
-export default function HomeSection({ setActiveSection }: Props) {
+export default function HomeSection({ setActiveSection, homeCycle, triggerHomeCycle }: Props) {
 
-  const [showName, setShowName] = useState(false)
- 
-
-  useEffect(()=>{
-    const interval = setInterval(()=>{
-      setShowName(prev => !prev)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+const showName = homeCycle % 2 !== 0 
 
 
 
@@ -102,7 +96,7 @@ export default function HomeSection({ setActiveSection }: Props) {
           </div>
 
           <div className="mt-8">
-            <RubikSkillsCarousel />
+            <RubikSkillsCarousel homeCycle={homeCycle} triggerHomeCycle={triggerHomeCycle}/>
           </div>
 
 
