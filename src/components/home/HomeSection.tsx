@@ -1,19 +1,16 @@
-import { useEffect, useState } from 'react'
 import ClayButton from '../ui/ClayButton'
-import SkillCard from '../ui/SkillCard'
 import RubikSkillsCarousel from '../../data/RubikSkillsCarousel'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { MoveType } from '../../types/cube.types'
 
 type Props = {
   setActiveSection?: (id: string) => void
-  homeCycle: number
-  triggerHomeCycle: (dir?: 1 | -1) => void
+  mainTitleToggle: boolean
+  skillsCarouselIndex: number
 }
 
-export default function HomeSection({ setActiveSection, homeCycle, triggerHomeCycle }: Props) {
+export default function HomeSection({ setActiveSection, mainTitleToggle,skillsCarouselIndex  }: Props) {
 
-const showName = homeCycle % 2 !== 0 
+const showName = mainTitleToggle
 
 
 
@@ -96,7 +93,7 @@ const showName = homeCycle % 2 !== 0
           </div>
 
           <div className="mt-8">
-            <RubikSkillsCarousel homeCycle={homeCycle} triggerHomeCycle={triggerHomeCycle}/>
+            <RubikSkillsCarousel skillsCarouselIndex={skillsCarouselIndex} />
           </div>
 
 

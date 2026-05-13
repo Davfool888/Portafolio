@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-
+import { FaWhatsapp, FaLinkedin, FaEnvelope } from 'react-icons/fa'
 
 
 
@@ -59,6 +59,27 @@ export default function ContactSection({ setActiveSection }: Props) {
       setLoading(false)
     }
   }
+
+  const contactOptions = [
+    {
+      id: "email",
+      label: "Email",
+      icon: <FaEnvelope className="text-lg" />,
+      activeColor: "bg-purple-50 border-purple-400 text-purple-700 shadow-md shadow-purple-200/50",
+    },
+    {
+      id: "whatsapp",
+      label: "WhatsApp",
+      icon: <FaWhatsapp className="text-lg" />,
+      activeColor: "bg-green-50 border-green-500 text-green-700 shadow-md shadow-green-200/50",
+    },
+    {
+      id: "linkedin",
+      label: "LinkedIn",
+      icon: <FaLinkedin className="text-lg" />,
+      activeColor: "bg-blue-50 border-blue-500 text-blue-700 shadow-md shadow-blue-200/50",
+    }
+  ]
 
   return (
     <section
@@ -124,25 +145,39 @@ export default function ContactSection({ setActiveSection }: Props) {
 
             {/* Method */}
 
-            <div>
-              <p className="text-sm text-gray-600 mb-2">
+           <div>
+              <p className="text-sm font-semibold text-gray-700 mb-3">
                 Preferred contact method:
               </p>
-
-              <div className="flex gap-6">
-                {["email", "whatsapp", "linkedin"].map((method)=>(
-                  <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    value={method}
-                    checked={form.contactMethod === method}
-                    onChange={handleMethodChange}
-                    disabled={loading}
-                  />
-                 {method}
-                </label>
-                ))}
-                
+              <div className="flex gap-4 flex-wrap">
+                {contactOptions.map((option) => {
+                  const isSelected = form.contactMethod === option.id;
+                  return (
+                    <label
+                      key={option.id}
+                      className={`
+                        relative flex items-center gap-2 px-5 py-2.5 rounded-full cursor-pointer 
+                        border-2 transition-all duration-300 ease-in-out font-semibold select-none
+                        ${isSelected 
+                          ? `${option.activeColor} scale-105`
+                          : "bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300 grayscale opacity-70" 
+                        }
+                      `}
+                    >
+                  
+                      <input
+                        type="radio"
+                        value={option.id}
+                        checked={isSelected}
+                        onChange={handleMethodChange}
+                        disabled={loading}
+                        className="hidden" 
+                      />
+                      {option.icon}
+                      {option.label}
+                    </label>
+                  );
+                })}
               </div>
             </div>
 

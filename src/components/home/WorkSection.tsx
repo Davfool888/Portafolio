@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import SkillCard from '../ui/SkillCard'
-import { projects } from "../../data/projects"
+import { projects } from '../../data/projects'
 
 // Importaciones de estilos
 // Importacion para las flechas del lado izquierdo
@@ -36,13 +36,7 @@ export default function WorkSection({ setActiveSection, projectIndex, setProject
 
   const project = projects[projectIndex]
 
-  //Tecnoligas a mapear para mostrar en cada proyecto
-  const skills = [
-    { icon: "⚛️", name: "React", color: "bg-purple-200" },
-    { icon: "🟢", name: "Node", color: "bg-green-200" },
-    { icon: "🎨", name: "Three.js", color: "bg-pink-200" }
-  ]
-
+  
   // Rotaciones del texto como cuborubik
   const cubeVariants = {
     enter: (direction: number) => ({
@@ -115,11 +109,12 @@ export default function WorkSection({ setActiveSection, projectIndex, setProject
                 </p>
              
 
-          <div className='flex gap-4 mt-2'>
-            {skills.map((skill, i) => (
-              <SkillCard key={skill.name} {...skill} delay={i * 100} />
+        <div className='flex flex-wrap gap-4 mt-2'>
+        
+            {project.techs.map((tech, i) => (
+              <SkillCard key={tech.name} {...tech} delay={i * 100} />
             ))}
-          </div> 
+          </div>
           </motion.div>
             </AnimatePresence>
           </div>

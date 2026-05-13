@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { transform } from 'framer-motion'
 import { div } from 'three/tsl'
+import { Minimize2 } from 'lucide-react'
+
 
 type Props = {
   setActiveSection?: (id: string) => void
@@ -62,6 +64,8 @@ export default function AboutSection({ setActiveSection }: Props) {
 
   // Nuevo estado para que las cards se puedan expandir y mostrar mas informacion a detalle
   const [detailedCardId, setDetailCardId] = useState<number | null>(null)
+
+  const [isHovered, setIsHovered] = useState(false)
 
 
   // Movimiento del carrusel infinito hacia adelante
@@ -149,7 +153,7 @@ export default function AboutSection({ setActiveSection }: Props) {
 
     return {
       transform: `translateX(${translateX}px) translateY(${translateY}px) scale(1) rotateZ(${rotateZ}deg)`,
-      zIndex: index, // Se apilan de izquierda a derecha
+      zIndex: index, 
       opacity: 1,
       visibility: 'visible' as const,
       pointerEvents: 'auto' as const
@@ -157,6 +161,21 @@ export default function AboutSection({ setActiveSection }: Props) {
   }
 
 
+  useEffect(() => {
+    let autoplayTimer: ReturnType<typeof setInterval>
+
+    if(viewMode === "carousel" && !isHovered && detailedCardId == null ){
+      autoplayTimer = setInterval(()=>{
+        handleNextCard()
+      }, 2000)
+    }
+
+    return () => {
+      if(autoplayTimer){
+        clearInterval(autoplayTimer)
+      }
+    }
+  }, [viewMode, isHovered, detailedCardId, activeIndex])
 
 
   return (
@@ -177,7 +196,10 @@ export default function AboutSection({ setActiveSection }: Props) {
             </div>
 
           {/* carousel container div */}
-          <div className="relative w-full h-[500px] flex justify-center items-center perspective-1000">
+          <div className="relative w-full h-[500px] flex justify-center items-center perspective-1000"
+          onMouseEnter={()=> setIsHovered(true)}
+          onMouseLeave={()=> setIsHovered(false)}
+          >
 
             {CARDS_DATA.map((card, index) => {
 
@@ -194,17 +216,19 @@ export default function AboutSection({ setActiveSection }: Props) {
                   className={`absolute w-72 h-96 p-8 rounded-3xl shadow-xl border border-white/40 backdrop-blur-lg transition-all duration-700 ease-in-out flex flex-col ${card.color} ${viewMode === 'fan' ? 'cursor-pointer hover:-translate-y-4 hover:shadow-2xl' : ''}`}
                   style={getCardStyle(index)}
                 >
-                  {isCenter && (
+                 {isCenter && (
                     <button
                       onClick={handleMinimize}
-                      className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/10 hover:bg-black/20 transition-colors text-gray-700"
-                      title="Return to cards"
+                      className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full 
+                                 bg-white/20 backdrop-blur-md border border-white/40 shadow-sm
+                                 text-gray-700 hover:text-gray-900 
+                                 hover:bg-white/40 hover:scale-110 hover:rotate-90
+                                 transition-all duration-300 ease-out z-50 group"
+                      title="Minimizar carta"
                     >
-                      X
-
+                      <Minimize2 className="w-4 h-4 transition-transform group-active:scale-90" strokeWidth={2.5} />
                     </button>
                   )}
-
                   <h3 className="text-2xl font-bold mb-4 text-gray-800">
                     {card.title}
                   </h3>

@@ -126,8 +126,9 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
         if (offset < 0.2) {
             const progress = offset / 0.2
             targetX = 2.5
-            targetY = 0
+            targetY = 1.15
             targetZ = 0
+            targetScale = 0.70
             targetQuat.setFromEuler(new Euler(0, progress * Math.PI * 0.5, 0))
 
             // WORK
@@ -136,8 +137,8 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
 
             // Hacemos que llegue a su posición final más rápido (en el primer 30% del scroll de la sección)
             const moveProgress = Math.min(progress / 0.3, 1.0)
-            targetX = MathUtils.lerp(2.5, 0, moveProgress)
-            targetY = 0
+            targetX = MathUtils.lerp(2.0, 0, moveProgress)
+            targetY = MathUtils.lerp(0.5, 0, moveProgress)
             targetZ = 0
 
             let targetPieceId = "0_1_0"
@@ -207,7 +208,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
 
             if (progress < 0.3) {
                 targetQuat.copy(startQuat).slerp(alignQuat, progress / 0.3);
-                targetScale = MathUtils.lerp(1, 0.8, progress / 0.3);
+                targetScale = MathUtils.lerp(0.75, 0.8, progress / 0.3);
 
 
                 targetDragRot.current.x = 0;
@@ -237,7 +238,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetX = -5
             targetY = -1
             targetZ = 2
-            targetScale = 1 
+            targetScale = 1
             targetQuat.setFromEuler(new Euler(MathUtils.lerp(0.5, 0, progress), Math.PI * 1.5 + progress * Math.PI, 0))
 
             // CONTACT

@@ -21,11 +21,11 @@ export default function PlaySection({ setActiveSection }: Props) {
       <div className="z-10 text-center pointer-events-none">
 
         <h2 className="text-5xl font-bold text-gray-800 pointer-events-auto">
-          Play
+         
         </h2>
 
         <p className="mt-4 text-lg text-gray-600 pointer-events-auto">
-          Interact with the cube freely
+         
         </p>
 
       </div>

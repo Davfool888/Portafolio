@@ -15,8 +15,6 @@ import { createCubeModel } from "./logic/cubeModel"
 import type { MoveType } from "./types/cube.types"
 
 import { checkerboardPattern, checkerboardPatternInverse, interChangeCubeMid, interChangeCubeMidInverse, turntwofortwo, turntwofortwoInverse, Tpatron, TpatronInverse } from "./data/cubePatterns"
-import { getInverseMove } from "./logic/historyManager"
-
 
 
 const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
@@ -58,40 +56,29 @@ function App() {
 
   // Nuevos estados para sincronizacion de transiciones con cube moves, historyStack para llevar un registros de los movimientos ejecutados en home y isUndoing, para saber si el cubo esta viajando en el tiempo hacia atras
 
-
-  const [homeCycle, setHomeCycle] = useState(0)
-
-  const triggerHomeCycle = useCallback((direction: 1 | -1 = 1) => {
-    setHomeCycle(prev => prev + direction)
-
-    if (direction === 1) {
-      setPatternQueue(q => [...q, "U", "D'", "N", "L", "R'"])
-    } else {
-      setPatternQueue(q => [...q, "R", "L'", "N'", "D", "U'"])
-    }
-  }, [])
-
+  const [mainTitleToggle, setMainTitleToggle] = useState(false)
+  const [skillsCarouselIndex, setSkillsCarouselIndex] = useState(0)
+  const [isReversePattern, setIsReversePattern] = useState(false)
   useEffect(() => {
-    if (activeSection !== "home") {
-      const currentMod = ((homeCycle % 12) + 12) % 12
-      if (currentMod !== 0) {
-        const remaining = 12 - currentMod
-        const moves: MoveType[] = []
-
-        for (let i = 0; i < remaining; i++) {
-          moves.push("U", "D'", "N", "L", "R'")
+    if (activeSection !== "home") return
+    
+    const injectPattern = () =>{
+      setIsReversePattern(prev => {
+        if(!prev){
+          setPatternQueue(q => [...q, "D", "U'", "F", "B'", "R", "L'", "N'"])
+        }else {
+          setPatternQueue(q => [...q, "N", "L", "R'", "B", "F'", "U", "D'"])
         }
-        setPatternQueue(q => [...q, ...moves])
-        setHomeCycle(prev => prev + remaining);
-      }
-      return
+        return !prev
+      })
     }
 
-    const interval = setInterval(() => {
-      triggerHomeCycle(1)
-    }, 4000)
+    injectPattern()
+
+    const interval = setInterval(injectPattern, 6000)
+
     return () => clearInterval(interval)
-  }, [activeSection, homeCycle, triggerHomeCycle])
+  }, [activeSection])
 
 
 
@@ -166,8 +153,23 @@ function App() {
       setMove(nextMove)
       setIsAnimating(true)
       setPatternQueue(prev => prev.slice(1))
+
+      if (activeSection === "home") {
+        const moveBase = nextMove.replace("'", "")
+
+        if(moveBase === "U" ) {
+          setMainTitleToggle(prev => !prev)
+        }
+
+        if (["L", "R", "M", "N", "W"].includes(moveBase)){
+          setSkillsCarouselIndex(prev => prev + 1)
+        }
+
+      }
+
+
     }
-  }, [isAnimating, patternQueue, setMove, setIsAnimating])
+  }, [isAnimating, patternQueue, setMove, setIsAnimating, activeSection])
 
 
 
@@ -254,7 +256,7 @@ function App() {
 
             <Scroll html style={{ width: '100vw' }}>
               <div className="pointer-events-auto">
-                <HomeSection setActiveSection={setActiveSection}  homeCycle={homeCycle} triggerHomeCycle={triggerHomeCycle} />
+                <HomeSection setActiveSection={setActiveSection} mainTitleToggle={mainTitleToggle} skillsCarouselIndex={skillsCarouselIndex} />
                 <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
                 <AboutSection setActiveSection={setActiveSection} />
                 <ContactSection setActiveSection={setActiveSection} />
