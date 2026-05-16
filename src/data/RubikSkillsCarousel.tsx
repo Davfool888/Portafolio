@@ -35,7 +35,7 @@ function ClaySkillCard({
       </div>
 
       {/* texto */}
-      <div className="relative text-gray-800 font-extrabold text-sm tracking-wide z-10 mt-1 text-center px-2 leading-tight">
+      <div className="relative text-gray-800 dark:text-gray-100 font-extrabold text-sm tracking-wide z-10 mt-1 text-center px-2 leading-tight">
         {name}
       </div>
     </div>
@@ -119,7 +119,7 @@ export default function RubikSkillsCarousel({
     <div className="flex flex-col gap-8 w-full max-w-lg pointer-events-auto">
 
       {/* header */}
-      <div className="flex items-center justify-center bg-white/20 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-lg border border-white/30">
+      <div className="flex items-center justify-center bg-white/20 dark:bg-black/20 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-lg border border-white/30 dark:border-white/10">
 
        
         {/* titulo */}
@@ -143,7 +143,7 @@ export default function RubikSkillsCarousel({
               style={{
                 transformOrigin: "center center -50px"
               }}
-              className="absolute text-xl font-bold text-gray-800 tracking-wide uppercase"
+              className="absolute text-xl font-bold text-gray-800 dark:text-gray-100 tracking-wide uppercase"
             >
               {currentCategory.category}
             </motion.h3>

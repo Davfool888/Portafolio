@@ -23,8 +23,7 @@ export const projects: Project[] = [
       { icon: <SiReact />, name: "React", color: "from-purple-200 to-purple-300 text-purple-700" },
       { icon: <SiJavascript />, name: "JavaScript", color: "from-yellow-200 to-yellow-300 text-yellow-700" }
     ], 
-    websiteUrl: "https://midominio.com",     
-    githubUrl: "https://github.com/usuario", 
+    githubUrl: "https://github.com/Davfool888/ClashOfClansIa_Frontend", 
   },
   {
     title: "AI Inference Backend",
@@ -34,8 +33,7 @@ export const projects: Project[] = [
       { icon: <SiMongodb />, name: "MongoDB", color: "from-green-200 to-green-300 text-green-700" },
       { icon: <SiPython />, name: "Python", color: "from-blue-200 to-blue-300 text-blue-700" }
     ],
-    websiteUrl: "https://midominio.com",     
-    githubUrl: "https://github.com/usuario", 
+    githubUrl: "https://github.com/Davfool888/ClashOfClansIa_Backend", 
   },
   {
     title: "Computer Vision Training Pipeline",
@@ -44,9 +42,7 @@ export const projects: Project[] = [
       { icon: <SiPython />, name: "Python", color: "from-blue-200 to-blue-300 text-blue-700" },
       { icon: <FaRobot />, name: "Roboflow", color: "from-purple-200 to-purple-300 text-purple-700" },
       { icon: <FaEye />, name: "YOLOv8", color: "from-cyan-200 to-cyan-300 text-cyan-700" }
-    ],
-    websiteUrl: "https://midominio.com",     
-    githubUrl: "https://github.com/usuario", 
+    ]
   },
   {
     title: "DevOps Inventory System",
@@ -56,8 +52,7 @@ export const projects: Project[] = [
       { icon: <SiGithub />, name: "GitHub", color: "from-gray-200 to-gray-300 text-gray-800" },
       { icon: <SiJenkins />, name: "Jenkins", color: "from-red-200 to-red-300 text-red-700" }
     ],
-    websiteUrl: "https://midominio.com",     
-    githubUrl: "https://github.com/usuario", 
+    githubUrl: "https://github.com/Davfool888/IntegracionC", 
   },
   {
     title: "Smart Inventory Management System",
@@ -66,9 +61,7 @@ export const projects: Project[] = [
       { icon: <SiReact />, name: "React", color: "from-purple-200 to-purple-300 text-purple-700" },
       { icon: <SiNodedotjs />, name: "Node.js", color: "from-green-200 to-green-300 text-green-700" },
       { icon: <FaDatabase />, name: "SQL", color: "from-blue-200 to-blue-300 text-blue-700" }
-    ],
-    websiteUrl: "https://midominio.com",     
-    githubUrl: "https://github.com/usuario", 
+    ]
   },
   {
     title: "E-Commerce Fashion Store",
@@ -77,8 +70,6 @@ export const projects: Project[] = [
       { icon: <SiWordpress />, name: "WordPress", color: "from-blue-200 to-blue-300 text-blue-800" },
       { icon: <SiReact />, name: "React", color: "from-purple-200 to-purple-300 text-purple-700" },
       { icon: <SiShopify />, name: "Shopify", color: "from-green-200 to-green-300 text-green-800" }
-    ],
-    websiteUrl: "https://midominio.com",     
-    githubUrl: "https://github.com/usuario", 
+    ]
   }
 ];

@@ -16,7 +16,7 @@ type Props = {
   setProjectIndex: (index: number | ((prev: number) => number)) => void;
 }
 
-export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
+export default function ProjectsSection({ projectIndex, setProjectIndex }: Props) {
 
 
 
@@ -119,7 +119,7 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
 
   return (
     <section
-      id="work"
+      id="projects"
       className="h-[100vh] flex items-center relative"
     >
       {/* fondo */}
@@ -156,11 +156,11 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
                 style={{ transformOrigin: "center center -150px" }}
                 className="absolute inset-0 flex flex-col gap-6 justify-center"
               >
-                <h2 className="text-5xl font-bold text-gray-900 leading-tight">
+                <h2 className="text-5xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
                   {project.title}
                 </h2>
 
-                <p className="text-lg text-gray-600 leading-relaxed">
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                   {project.description}
                 </p>
 
@@ -182,30 +182,30 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
           {/* botones para mover el cubo */}
           <button
             onClick={() => navTo('up')}
-            className="absolute top-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-xl border border-white/30 shadow-lg transition-all hover:bg-purple-400/30 hover:scale-110 pointer-events-auto z-50"
+            className="absolute top-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto z-50"
           >
-            <ChevronUp className="text-gray-700" size={24} />
+            <ChevronUp className="text-gray-700 dark:text-gray-300" size={24} />
           </button>
 
           <button
             onClick={() => navTo('down')}
-            className="absolute bottom-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-xl border border-white/30 shadow-lg transition-all hover:bg-purple-400/30 hover:scale-110 pointer-events-auto z-50"
+            className="absolute bottom-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto z-50"
           >
-            <ChevronDown className="text-gray-700" size={24} />
+            <ChevronDown className="text-gray-700 dark:text-gray-300" size={24} />
           </button>
 
           <button
             onClick={() => navTo('left')}
-            className="absolute left-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-xl border border-white/30 shadow-lg transition-all hover:bg-purple-400/30 hover:scale-110 pointer-events-auto z-50"
+            className="absolute left-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto z-50"
           >
-            <ChevronLeft className="text-gray-700" size={24} />
+            <ChevronLeft className="text-gray-700 dark:text-gray-300" size={24} />
           </button>
 
           <button
             onClick={() => navTo('right')}
-            className="absolute right-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-xl border border-white/30 shadow-lg transition-all hover:bg-purple-400/30 hover:scale-110 pointer-events-auto z-50"
+            className="absolute right-0 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto z-50"
           >
-            <ChevronRight className="text-gray-700" size={24} />
+            <ChevronRight className="text-gray-700 dark:text-gray-300" size={24} />
           </button>
 
           {/* links a web y github debajo del cubo */}
@@ -223,12 +223,13 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
                   exit="exit"
                   transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
                   style={{ transformOrigin: "center center -30px" }}
-                  href={project.websiteUrl || "#"}
-                  target="_blank"
+                  href={project.websiteUrl || undefined}
+                  target={project.websiteUrl ? "_blank" : undefined}
                   rel="noopener noreferrer"
-                  className="absolute inset-0 flex items-center justify-center gap-2 bg-white/40 backdrop-blur-xl border border-white/50 px-5 py-2.5 rounded-full text-gray-800 font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 transition-all"
+                  className={`absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-xl border border-white/50 dark:border-white/10 px-5 py-2.5 rounded-full font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all ${project.websiteUrl ? 'bg-white/40 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 dark:hover:bg-white/20 cursor-pointer' : 'bg-gray-300/40 dark:bg-gray-800/40 text-gray-400 dark:text-gray-600 cursor-not-allowed'}`}
+                  onClick={(e) => { if (!project.websiteUrl) e.preventDefault(); }}
                 >
-                  <Globe size={18} className="text-cyan-600" />
+                  <Globe size={18} className={project.websiteUrl ? "text-cyan-600" : "text-gray-400 dark:text-gray-600"} />
                   <span className="text-sm tracking-wide">Página Web</span>
                 </motion.a>
               </AnimatePresence>
@@ -246,12 +247,13 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
                   exit="exit"
                   transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
                   style={{ transformOrigin: "center center -30px" }}
-                  href={project.githubUrl || "#"}
-                  target="_blank"
+                  href={project.githubUrl || undefined}
+                  target={project.githubUrl ? "_blank" : undefined}
                   rel="noopener noreferrer"
-                  className="absolute inset-0 flex items-center justify-center gap-2 bg-white/40 backdrop-blur-xl border border-white/50 px-5 py-2.5 rounded-full text-gray-800 font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 transition-all"
+                  className={`absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-xl border border-white/50 dark:border-white/10 px-5 py-2.5 rounded-full font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all ${project.githubUrl ? 'bg-white/40 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 dark:hover:bg-white/20 cursor-pointer' : 'bg-gray-300/40 dark:bg-gray-800/40 text-gray-400 dark:text-gray-600 cursor-not-allowed'}`}
+                  onClick={(e) => { if (!project.githubUrl) e.preventDefault(); }}
                 >
-                  <SiGithub size={18} className="text-purple-600" />
+                  <SiGithub size={18} className={project.githubUrl ? "text-purple-600 dark:text-purple-400" : "text-gray-400 dark:text-gray-600"} />
                   <span className="text-sm tracking-wide">GitHub</span>
                 </motion.a>
               </AnimatePresence>
@@ -295,7 +297,7 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
                   if (isTop) setImageIndex((prev) => (prev - 1 + currentImages.length) % currentImages.length);
                   if (isBottom) setImageIndex((prev) => (prev + 1) % currentImages.length);
                 }}
-                className={`absolute w-full max-w-[320px] h-[230px] rounded-3xl overflow-hidden bg-white/20 backdrop-blur-xl border border-white/40 transition-all duration-500 ease-out flex flex-col items-center justify-center text-gray-700 ${positionClasses} ${zIndexClass}`}
+                className={`absolute w-full max-w-[320px] h-[230px] rounded-3xl overflow-hidden bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/40 dark:border-white/10 transition-all duration-500 ease-out flex flex-col items-center justify-center text-gray-700 dark:text-gray-200 ${positionClasses} ${zIndexClass}`}
               >
 
                 <img
@@ -331,7 +333,7 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
           onClick={() => setExpandedImage(false)}
         >
           <div
-            className="bg-white/90 backdrop-blur-xl w-full max-w-5xl h-[65vh] rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex overflow-hidden border border-white/50 relative"
+            className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl w-full max-w-5xl h-[65vh] rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex overflow-hidden border border-white/50 dark:border-white/10 relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* boton de cerrar  */}
@@ -347,16 +349,16 @@ export default function WorkSection({ projectIndex, setProjectIndex }: Props) {
               <span className="text-purple-500 font-bold tracking-widest uppercase text-sm mb-4">
                 Detalle Visual
               </span>
-              <h2 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">
+              <h2 className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-8 leading-tight">
                 {project.title}
               </h2>
-              <p className="text-xl text-gray-600 leading-relaxed">
+              <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
 
                 {project.description}
               </p>
             </div>
             {/* lado derecho */}
-            <div className="w-1/2 bg-gray-100 flex flex-col justify-center items-center border-l border-gray-200/50 relative">
+            <div className="w-1/2 bg-gray-100 dark:bg-gray-950 flex flex-col justify-center items-center border-l border-gray-200/50 dark:border-white/10 relative">
               <img
                 src={currentImages[imageIndex]}
                 alt="Vista Expandida"

@@ -11,7 +11,7 @@ export default function PlaySection({}: Props) {
   return (
     <section
       id="play"
-      className="h-[100vh] flex flex-col items-center justify-center relative"
+      className="min-h-[120vh] flex flex-col items-center justify-center relative pb-20"
     >
       
       {/* fondo suave */}
@@ -20,11 +20,11 @@ export default function PlaySection({}: Props) {
       {/* contenido */}
       <div className="z-10 text-center pointer-events-none">
 
-        <h2 className="text-5xl font-bold text-gray-800 pointer-events-auto">
+        <h2 className="text-5xl font-bold text-gray-800 dark:text-gray-100 pointer-events-auto">
          
         </h2>
 
-        <p className="mt-4 text-lg text-gray-600 pointer-events-auto">
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 pointer-events-auto">
          
         </p>
 

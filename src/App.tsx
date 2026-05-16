@@ -7,7 +7,7 @@ import HomeSection from "./components/home/HomeSection"
 import Navbar from "./components/layauot/Navbar"
 import FloatingTags from "./components/ui/FloatingTags"
 
-import WorkSection from "./components/home/WorkSection"
+import ProjectsSection from "./components/home/ProjectsSection"
 import AboutSection from "./components/home/AboutSection"
 import ContactSection from "./components/home/ContactSection"
 import PlaySection from "./components/home/PlaySection"
@@ -31,7 +31,7 @@ const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
 function App() {
 
   // Secciones de mi navbar
-  const sections = ["home", "work", "about", "contact", "play"]
+  const sections = ["home", "projects", "about", "contact", "play"]
 
   // Estado para mover los colores de los index del navbar y asi saber en que seccion se esta posicionado
   const [activeSection, setActiveSection] = useState("home")
@@ -50,7 +50,7 @@ function App() {
   // Estado para mover mi cubo a medida de que se mueve los diferente projectos
   const [projectIndex, setProjectIndex] = useState(0)
 
-  // estado para patrones del cubo se ejecuten cuando lleguen al WorkSection
+  // estado para patrones del cubo se ejecuten cuando lleguen a ProjectsSection
   const [patternQueue, setPatternQueue] = useState<MoveType[]>([])
   // estado para intercambiar los patrones del cubo cada 10s
   const [aboutPatternIndex, setAboutPatternIndex] = useState(0)
@@ -60,6 +60,9 @@ function App() {
 
   const [mainTitleToggle, setMainTitleToggle] = useState(false)
   const [skillsCarouselIndex, setSkillsCarouselIndex] = useState(0)
+  // creamos estado de modo oscuro
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
  const isReversePatternRef = useRef(false)
  
   useEffect(() => {
@@ -113,7 +116,7 @@ function App() {
   // Reajuste de scroll para arreglar bug de no change of section
   const sectionOffsets: Record<string, number> = {
     home: 0 / totalPages,
-    work: 1 / totalPages,
+    projects: 1 / totalPages,
     about: 2 / totalPages,
     contact: 3 / totalPages,
     play: 4 / totalPages,
@@ -199,7 +202,7 @@ function App() {
     const handleScroll = () => {
       const offset = el.scrollTop / el.scrollHeight
       if (offset < 0.2) setActiveSection("home")
-      else if (offset < 0.4) setActiveSection("work")
+      else if (offset < 0.4) setActiveSection("projects")
       else if (offset < 0.6) setActiveSection("about")
       else if (offset < 0.8) setActiveSection("contact")
       else setActiveSection("play")
@@ -230,12 +233,16 @@ function App() {
 
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#f8f3ff] via-[#fff5f7] to-[#f0fdf9]">
+    <div className={`min-h-screen relative overflow-hidden transition-colors duration-700 ease-in-out
+      ${isDarkMode 
+        ? "bg-gradient-to-br from-[#130f24] via-[#1a111a] to-[#0f181b] dark" 
+        : "bg-gradient-to-br from-[#f8f3ff] via-[#fff5f7] to-[#f0fdf9]"}`}
+    >
 
       {/* Luces (Fondo fijo) */}
-      <div className="fixed top-20 left-10 w-40 h-40 rounded-full bg-[#c471ed]/20 blur-3xl pointer-events-none" />
-      <div className="fixed bottom-40 right-20 w-48 h-48 rounded-full bg-[#ff6b9d]/20 blur-3xl pointer-events-none" />
-      <div className="fixed top-1/2 left-1/3 w-32 h-32 rounded-full bg-[#4ecdc4]/15 blur-2xl pointer-events-none" />
+      <div className={`fixed top-20 left-10 w-40 h-40 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#c471ed]/15" : "bg-[#c471ed]/20"}`} />
+      <div className={`fixed bottom-40 right-20 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#ff6b9d]/15" : "bg-[#ff6b9d]/20"}`} />
+      <div className={`fixed top-1/2 left-1/3 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#4ecdc4]/10" : "bg-[#4ecdc4]/15"}`} />
 
       {/* Navbar arriba */}
       <div className="fixed top-0 left-0 w-full z-50 pointer-events-auto">
@@ -248,12 +255,12 @@ function App() {
         />     
       </div>
       
-      <FloatingTags/>
+      <FloatingTags isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
 
       {/* 3D Canvas Global */}
       <div className="fixed inset-0 z-0">
         <Canvas camera={{ position: [4, 4, 4], fov: 50 }}>
-          <ScrollControls pages={5} damping={0.2}>
+          <ScrollControls pages={5.2} damping={0.2}>
 
             <MainScene
               cubies={cubies}
@@ -272,26 +279,20 @@ function App() {
 
             <Scroll html style={{ width: '100vw' }}>
               <div className="pointer-events-auto">
-                <div className="outline outline-2 outline-red-500 outline-dashed relative">
-                  <HomeSection setActiveSection={setActiveSection} mainTitleToggle={mainTitleToggle} skillsCarouselIndex={skillsCarouselIndex} />
-                  {/* etiqueta para identificar */}
-                  <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de HOME</span>
+                <div className="relative">
+                  <HomeSection setActiveSection={setActiveSection} mainTitleToggle={mainTitleToggle} skillsCarouselIndex={skillsCarouselIndex} onNavigate={scrollToSection} />
                 </div>
-                <div className="outline outline-2 outline-blue-500 outline-dashed relative">
-                  <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
-                  <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de WORK</span>
+                <div className="relative">
+                  <ProjectsSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
                 </div>
-                <div className="outline outline-2 outline-green-500 outline-dashed relative">
+                <div className="relative">
                   <AboutSection setActiveSection={setActiveSection} />
-                  <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de ABOUT</span>
                 </div>
-                <div className="outline outline-2 outline-purple-500 outline-dashed relative">
+                <div className="relative">
                   <ContactSection setActiveSection={setActiveSection} />
-                  <span className="absolute top-2 left-2 bg-purple-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de CONTACT</span>
                 </div>
-                <div className="outline outline-2 outline-orange-500 outline-dashed relative">
+                <div className="relative">
                   <PlaySection setActiveSection={setActiveSection} />
-                  <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de PLAY</span>
                 </div>
               </div>
             </Scroll>

@@ -23,7 +23,7 @@ export default function SkillCard({ icon, name, color, delay = 0 }: Props) {
             <div className="text-3xl drop-shadow-md">{icon}</div>
             
             
-            <div className="text-sm text-gray-900">{name}</div>
+            <div className="text-sm text-gray-900 dark:text-gray-100">{name}</div>
         </div>
     )
 }

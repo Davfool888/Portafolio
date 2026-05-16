@@ -6,9 +6,10 @@ type Props = {
   setActiveSection?: (id: string) => void
   mainTitleToggle: boolean
   skillsCarouselIndex: number
+  onNavigate?: (id: string) => void
 }
 
-export default function HomeSection({ mainTitleToggle,skillsCarouselIndex  }: Props) {
+export default function HomeSection({ mainTitleToggle,skillsCarouselIndex, onNavigate }: Props) {
 
 const showName = mainTitleToggle
 
@@ -54,7 +55,7 @@ const showName = mainTitleToggle
                   exit="exit"
                   transition={{type:"spring", bounce: 0.3, duration:0.8}}
                   style={{ transformOrigin: "center center -50px" }} 
-                  className="absolute text-6xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent"
+                  className="absolute text-6xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent"
                   >
                     {showName ? "David" : "FullStack"}
 
@@ -73,7 +74,7 @@ const showName = mainTitleToggle
                   exit="exit"
                   transition={{type:"spring", bounce: 0.3, duration:0.8}}
                   style={{ transformOrigin: "center center -50px" }} 
-                  className="absolute text-6xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent"
+                  className="absolute text-6xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent"
                   >
                     {showName ? "Herrera" : "Developer"}
 
@@ -81,15 +82,17 @@ const showName = mainTitleToggle
                 </AnimatePresence>
               </div>
               </div>
-              <p className="text-lg text-gray-600 mt-2 max-w-sm">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mt-2 max-w-sm">
                 Building modern software experiences
               </p>
             </div>
           </div>
 
           <div className="flex gap-4">
-            <ClayButton>Ver Proyectos</ClayButton>
-            <ClayButton variant="secondary">Contacto</ClayButton>
+            {/* agregamos la funcion par anavegar al hacer clik */}
+            {/* esto hace que el cubo tmb se mueva como si hicieran scrol */}
+            <ClayButton onClick={() => onNavigate?.('projects')}>Ver Proyectos</ClayButton>
+            <ClayButton variant="secondary" onClick={() => onNavigate?.('contact')}>Contacto</ClayButton>
           </div>
 
           <div className="mt-8">

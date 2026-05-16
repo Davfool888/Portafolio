@@ -1,10 +1,11 @@
 interface Props {
     children: React.ReactNode
     variant?: "primary" | "secondary"
+    onClick?: () => void
 }
 
 
-export default function ClayButton({ children, variant = "primary" }: Props) {
+export default function ClayButton({ children, variant = "primary", onClick }: Props) {
 
     
     const styles = {
@@ -27,7 +28,9 @@ export default function ClayButton({ children, variant = "primary" }: Props) {
       hover:-translate-y-1 hover:scale-[1.02]
       active:scale-[0.98]
       ${styles[variant]}
-    `}>
+    `}
+            onClick={onClick}
+        >
             {children}
         </button>
     )

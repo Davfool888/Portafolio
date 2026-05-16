@@ -131,7 +131,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetScale = 0.70
             targetQuat.setFromEuler(new Euler(0, progress * Math.PI * 0.5, 0))
 
-            // work
+            // projects
         } else if (offset < 0.4) {
             const progress = (offset - 0.2) / 0.2
 
@@ -247,9 +247,10 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             // contact
         } else if (offset < 0.8) {
             const progress = (offset - 0.6) / 0.2
-            targetX = 0
-            targetY = MathUtils.lerp(0, -1.5, progress)
-            targetZ = MathUtils.lerp(-2, 0, progress)
+            targetX = 2.5
+            targetY = 0
+            targetZ = 0
+            targetScale = 0.85
             targetQuat.setFromEuler(new Euler(0, Math.PI * 2.5 + progress * Math.PI * 0.5, 0))
 
             // play
