@@ -1,9 +1,12 @@
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef} from "react"
 import { Canvas } from "@react-three/fiber"
 import { ScrollControls, Scroll } from "@react-three/drei"
 
 import HomeSection from "./components/home/HomeSection"
+
 import Navbar from "./components/layauot/Navbar"
+import FloatingTags from "./components/ui/FloatingTags"
+
 import WorkSection from "./components/home/WorkSection"
 import AboutSection from "./components/home/AboutSection"
 import ContactSection from "./components/home/ContactSection"
@@ -15,6 +18,7 @@ import { createCubeModel } from "./logic/cubeModel"
 import type { MoveType } from "./types/cube.types"
 
 import { checkerboardPattern, checkerboardPatternInverse, interChangeCubeMid, interChangeCubeMidInverse, turntwofortwo, turntwofortwoInverse, Tpatron, TpatronInverse } from "./data/cubePatterns"
+
 
 
 const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
@@ -35,12 +39,11 @@ function App() {
   const [scrollReady, setScrollReady] = useState(false)
 
   // estado para expandir el cubo
-  const [explode, setExplode] = useState(false)
+
   // estado para girar el cubo, no utilizado en este momento
   const [isRotate, setIsRotate] = useState(true)
 
   const [cubies, setCubies] = useState(createCubeModel())
-  // estado para la animacion de movimiento dle cubo, no movimiento real
   const [isAnimating, setIsAnimating] = useState(false)
   const [move, setMove] = useState<MoveType | null>(null)
 
@@ -51,35 +54,54 @@ function App() {
   const [patternQueue, setPatternQueue] = useState<MoveType[]>([])
   // estado para intercambiar los patrones del cubo cada 10s
   const [aboutPatternIndex, setAboutPatternIndex] = useState(0)
-  // estados de ejecucion, mostrando patron actual- ejecutando inverso- ejecutando nuevo patron
   const [aboutPhase, setAboutPhase] = useState<"idle" | "playing" | "undoing">("idle")
 
   // Nuevos estados para sincronizacion de transiciones con cube moves, historyStack para llevar un registros de los movimientos ejecutados en home y isUndoing, para saber si el cubo esta viajando en el tiempo hacia atras
 
   const [mainTitleToggle, setMainTitleToggle] = useState(false)
   const [skillsCarouselIndex, setSkillsCarouselIndex] = useState(0)
-  const [isReversePattern, setIsReversePattern] = useState(false)
+ const isReversePatternRef = useRef(false)
+ 
   useEffect(() => {
-    if (activeSection !== "home") return
-    
-    const injectPattern = () =>{
-      setIsReversePattern(prev => {
-        if(!prev){
-          setPatternQueue(q => [...q, "D", "U'", "F", "B'", "R", "L'", "N'"])
-        }else {
-          setPatternQueue(q => [...q, "N", "L", "R'", "B", "F'", "U", "D'"])
-        }
-        return !prev
-      })
+  if (activeSection !== "home") return
+
+  const injectPattern = () => {
+
+    if (!isReversePatternRef.current) {
+      setPatternQueue(q => [
+        ...q,
+        "D",
+        "U'",
+        "F",
+        "B'",
+        "R",
+        "L'",
+        "N'"
+      ])
+    } else {
+      setPatternQueue(q => [
+        ...q,
+        "N",
+        "L",
+        "R'",
+        "B",
+        "F'",
+        "U",
+        "D'"
+      ])
     }
 
-    injectPattern()
+    isReversePatternRef.current =
+      !isReversePatternRef.current
+  }
 
-    const interval = setInterval(injectPattern, 6000)
+  injectPattern()
 
-    return () => clearInterval(interval)
-  }, [activeSection])
+  const interval = setInterval(injectPattern, 6000)
 
+  return () => clearInterval(interval)
+
+}, [activeSection])
 
 
 
@@ -97,7 +119,6 @@ function App() {
     play: 4 / totalPages,
   }
 
-  // UseEfects para logica del cubo en AboutSection (este carga los patrones, estados y movimientos iniciales)
   useEffect(() => {
     if (activeSection === "about") {
       const [firstPattern] = ABOUT_PATTERNS[0]
@@ -119,7 +140,6 @@ function App() {
     }
   }, [activeSection])
 
-  // Este se encarga del temporizador, despues de que el temporizador termine los 10s, cambiar el estaado a inversePattern
   useEffect(() => {
     if (activeSection !== "about" || aboutPhase !== "playing") return
 
@@ -170,11 +190,6 @@ function App() {
 
     }
   }, [isAnimating, patternQueue, setMove, setIsAnimating, activeSection])
-
-
-
-
-
 
 
 
@@ -230,8 +245,10 @@ function App() {
           activeSection={activeSection}
           scrollElRef={scrollElRef}
           scrollReady={scrollReady}
-        />
+        />     
       </div>
+      
+      <FloatingTags/>
 
       {/* 3D Canvas Global */}
       <div className="fixed inset-0 z-0">
@@ -240,7 +257,6 @@ function App() {
 
             <MainScene
               cubies={cubies}
-              explode={explode}
               isRotate={isRotate}
               move={move}
               isAnimating={isAnimating}
@@ -256,11 +272,27 @@ function App() {
 
             <Scroll html style={{ width: '100vw' }}>
               <div className="pointer-events-auto">
-                <HomeSection setActiveSection={setActiveSection} mainTitleToggle={mainTitleToggle} skillsCarouselIndex={skillsCarouselIndex} />
-                <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
-                <AboutSection setActiveSection={setActiveSection} />
-                <ContactSection setActiveSection={setActiveSection} />
-                <PlaySection setActiveSection={setActiveSection} />
+                <div className="outline outline-2 outline-red-500 outline-dashed relative">
+                  <HomeSection setActiveSection={setActiveSection} mainTitleToggle={mainTitleToggle} skillsCarouselIndex={skillsCarouselIndex} />
+                  {/* etiqueta para identificar */}
+                  <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de HOME</span>
+                </div>
+                <div className="outline outline-2 outline-blue-500 outline-dashed relative">
+                  <WorkSection setActiveSection={setActiveSection} projectIndex={projectIndex} setProjectIndex={setProjectIndex} />
+                  <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de WORK</span>
+                </div>
+                <div className="outline outline-2 outline-green-500 outline-dashed relative">
+                  <AboutSection setActiveSection={setActiveSection} />
+                  <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de ABOUT</span>
+                </div>
+                <div className="outline outline-2 outline-purple-500 outline-dashed relative">
+                  <ContactSection setActiveSection={setActiveSection} />
+                  <span className="absolute top-2 left-2 bg-purple-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de CONTACT</span>
+                </div>
+                <div className="outline outline-2 outline-orange-500 outline-dashed relative">
+                  <PlaySection setActiveSection={setActiveSection} />
+                  <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded font-bold z-[9999]">Inicio de PLAY</span>
+                </div>
               </div>
             </Scroll>
 

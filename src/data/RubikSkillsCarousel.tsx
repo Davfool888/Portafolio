@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { categoriesData } from "./categoriesData";
 
 type Props = {
@@ -27,15 +26,15 @@ function ClaySkillCard({
         transition-all duration-300 group
       `}
     >
-      {/* Brillo */}
+      {/* brillo */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-black/5 rounded-[2rem] pointer-events-none" />
 
-      {/* Icono */}
+      {/* icono */}
       <div className="relative text-[40px] drop-shadow-xl group-hover:scale-110 transition-transform duration-300 z-10">
         {icon}
       </div>
 
-      {/* Texto */}
+      {/* texto */}
       <div className="relative text-gray-800 font-extrabold text-sm tracking-wide z-10 mt-1 text-center px-2 leading-tight">
         {name}
       </div>
@@ -49,20 +48,20 @@ export default function RubikSkillsCarousel({
 
   const dataSkills = categoriesData
 
-  // Índice sincronizado con movimientos reales del cubo
+  // indice sincronizado con movimientos reales del cubo
   const currentIndex =
     ((skillsCarouselIndex % dataSkills.length) + dataSkills.length) %
     dataSkills.length
 
   const currentCategory = dataSkills[currentIndex]
 
-  // Alternar dirección visual
+  // alternar direccion visual
   const flipDirection = skillsCarouselIndex % 2 === 0
 
-  // Dirección para animación del título
+  // direccion para animacion del titulo
   const direction = flipDirection ? 1 : -1
 
-  // Variantes título
+  // variantes titulo
   const titleVariants = {
     enter: (dir: number) => ({
       rotateY: dir > 0 ? 90 : -90,
@@ -80,7 +79,7 @@ export default function RubikSkillsCarousel({
     }),
   }
 
-  // Variantes izquierda
+  // variantes izquierda
   const leftSkillVariants = {
     enter: (flip: boolean) => ({
       rotateX: flip ? 90 : -90,
@@ -98,7 +97,7 @@ export default function RubikSkillsCarousel({
     }),
   }
 
-  // Variantes derecha
+  // variantes derecha
   const rightSkillVariants = {
     enter: (flip: boolean) => ({
       rotateX: flip ? -90 : 90,
@@ -119,11 +118,11 @@ export default function RubikSkillsCarousel({
   return (
     <div className="flex flex-col gap-8 w-full max-w-lg pointer-events-auto">
 
-      {/* Header */}
+      {/* header */}
       <div className="flex items-center justify-center bg-white/20 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-lg border border-white/30">
 
        
-        {/* Título */}
+        {/* titulo */}
         <div
           style={{ perspective: 1000 }}
           className="relative h-8 flex-1 flex items-center justify-center overflow-visible"
@@ -154,10 +153,10 @@ export default function RubikSkillsCarousel({
       
       </div>
 
-      {/* Cards */}
+      {/* cards */}
       <div className="flex gap-4 items-center justify-center">
 
-        {/* LEFT */}
+        {/* izquierda */}
         <div
           style={{ perspective: 1000 }}
           className="relative w-32 h-32"
@@ -190,7 +189,7 @@ export default function RubikSkillsCarousel({
           </AnimatePresence>
         </div>
 
-        {/* CENTER */}
+        {/* centro */}
         <div className="relative w-32 h-32 z-10">
           <AnimatePresence mode="popLayout">
             <motion.div
@@ -219,7 +218,7 @@ export default function RubikSkillsCarousel({
           </AnimatePresence>
         </div>
 
-        {/* RIGHT */}
+        {/* derecha */}
         <div
           style={{ perspective: 1000 }}
           className="relative w-32 h-32"

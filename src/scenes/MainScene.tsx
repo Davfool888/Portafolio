@@ -6,11 +6,11 @@ import type { Cubie } from "../logic/cubeModel"
 import MoveControl from "../components/cube/rotationFaces/MoveControl"
 import type { MoveType } from "../types/cube.types"
 import ScrollCubeController from "../components/cube/ScrollCubeController"
-import { Quaternion, Group } from "three"
+import { Quaternion, Group, Vector3, Matrix4 } from "three"
 
 type MainSceneProps = {
     cubies: Cubie[]
-    explode: boolean
+   
     isRotate: boolean
 
     move: MoveType | null
@@ -27,7 +27,7 @@ type MainSceneProps = {
     activeSection: string
 }
 
-export default function MainScene({ cubies, explode, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove, projectIndex, setProjectIndex, scrollElRef, onScrollReady, activeSection }: MainSceneProps) {
+export default function MainScene({ cubies, isRotate, move, isAnimating, setCubies, setIsAnimating, setMove, projectIndex, setProjectIndex, scrollElRef, onScrollReady, activeSection }: MainSceneProps) {
 
     const executeMove = (move: string) => {
         if (isAnimating) return
@@ -39,10 +39,9 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
     const spinGroupRef = useRef<Group>(null)
     const scroll = useScroll()
 
-
-
     useFrame((state, delta) => {
         if (!scroll || !controlsRef.current) return
+
         const offset = scroll.offset
 
         if (scrollElRef.current !== scroll.el) {
@@ -50,20 +49,35 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
             onScrollReady()
         }
 
-
         if (offset >= 0.2 && offset < 0.6) {
             controlsRef.current.enabled = false
+
+            state.camera.position.lerp(new Vector3(4, 4, 4), delta * 4)
+
+            const lookAtMatrix = new Matrix4().lookAt(
+                state.camera.position,
+                new Vector3(0, 0, 0),
+                new Vector3(0, 1, 0)
+            )
+
+            const targetCamQuat = new Quaternion().setFromRotationMatrix(lookAtMatrix)
+
+            state.camera.quaternion.slerp(targetCamQuat, delta * 4)
         } else {
             controlsRef.current.enabled = true
         }
 
-        if(spinGroupRef.current){
-            if(isRotate){
+        if (spinGroupRef.current) {
+            if (isRotate) {
                 spinGroupRef.current.rotation.x += delta * 0.3
                 spinGroupRef.current.rotation.y += delta * 0.4
-            }else{
+            } else {
                 const targetQuat = new Quaternion()
-                spinGroupRef.current.quaternion.slerp(targetQuat, delta * 4)
+
+                spinGroupRef.current.quaternion.slerp(
+                    targetQuat,
+                    delta * 4
+                )
             }
         }
     })
@@ -73,18 +87,21 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
 
-            <ScrollCubeController cubies={cubies} projectIndex={projectIndex} setProjectIndex={setProjectIndex}>
-                
+            <ScrollCubeController
+                cubies={cubies}
+                projectIndex={projectIndex}
+                setProjectIndex={setProjectIndex}
+            >
+
                 <group ref={spinGroupRef}>
-                <RubikCube
-                    explode={explode}
-                    cubies={cubies}
-                    move={move}
-                    isAnimating={isAnimating}
-                    setCubies={setCubies}
-                    setIsAnimating={setIsAnimating}
-                    setMove={setMove}
-                /> 
+                    <RubikCube
+                        cubies={cubies}
+                        move={move}
+                        isAnimating={isAnimating}
+                        setCubies={setCubies}
+                        setIsAnimating={setIsAnimating}
+                        setMove={setMove}
+                    />
                 </group>
 
                 {activeSection === "play" && (
@@ -95,30 +112,35 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
                             rotation={[0, 0, 0]}
                             onMove={executeMove}
                         />
+
                         <MoveControl
                             label="R"
                             position={[2.5, 0, 0]}
                             rotation={[0, 0, -Math.PI / 2]}
                             onMove={executeMove}
                         />
+
                         <MoveControl
                             label="D"
                             position={[0, -2.5, 0]}
                             rotation={[0, 0, Math.PI]}
                             onMove={executeMove}
                         />
+
                         <MoveControl
                             label="L"
                             position={[-2.5, 0, 0]}
                             rotation={[0, 0, Math.PI / 2]}
                             onMove={executeMove}
                         />
+
                         <MoveControl
                             label="F"
                             position={[0, 0, 2.5]}
                             rotation={[Math.PI / 2, 0, 0]}
                             onMove={executeMove}
                         />
+
                         <MoveControl
                             label="B"
                             position={[0, 0, -2.5]}
@@ -126,14 +148,10 @@ export default function MainScene({ cubies, explode, isRotate, move, isAnimating
                             onMove={executeMove}
                         />
                     </>
-
                 )}
-                {/* Controles 3d como buttoms */}
-
 
             </ScrollCubeController>
 
-            {/* Controles para la camara */}
             <OrbitControls
                 ref={controlsRef}
                 rotateSpeed={0.35}

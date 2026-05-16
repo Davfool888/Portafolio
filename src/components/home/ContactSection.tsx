@@ -7,9 +7,9 @@ type Props = {
   setActiveSection?: (id: string) => void
 }
 
-export default function ContactSection({ setActiveSection }: Props) {
+export default function ContactSection({ }: Props) {
 
-  // Estado para el formulario
+  // estado para el formulario
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -17,7 +17,7 @@ export default function ContactSection({ setActiveSection }: Props) {
     contactMethod: "email"
   })
 
-  // Estados  de interfaz de carga
+  // estados de interfaz de carga
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
 
@@ -92,7 +92,7 @@ export default function ContactSection({ setActiveSection }: Props) {
 
 
 
-        {/* Header */}
+        {/* header */}
         <div className="text-center mb-10">
           <h2 className="text-5xl font-bold text-gray-800 mb-4">
             Contact
@@ -105,12 +105,12 @@ export default function ContactSection({ setActiveSection }: Props) {
 
 
 
-        {/* Formulario */}
+        {/* formulario */}
         <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-lg border">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
 
-            {/* Nobre y email juntos */}
+            {/* nombre y email juntos */}
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="text"
@@ -143,7 +143,7 @@ export default function ContactSection({ setActiveSection }: Props) {
             />
 
 
-            {/* Method */}
+            {/* method */}
 
            <div>
               <p className="text-sm font-semibold text-gray-700 mb-3">
@@ -189,7 +189,7 @@ export default function ContactSection({ setActiveSection }: Props) {
               {loading ? "Sending.." : "Send Message"}
             </button>
             
-            {/* Feedback */}
+            {/* feedback */}
               {status === "success" &&(
                 <p className='text-green-500 text-sm'>
                   Message sent successfully

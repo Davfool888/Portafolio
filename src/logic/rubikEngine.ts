@@ -1,4 +1,4 @@
-import { Switch } from "three/tsl"
+
 import type { Cubie } from "./cubeModel"
 import { Matrix4 } from "three"
 

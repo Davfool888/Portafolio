@@ -1,10 +1,10 @@
-import { useEffect } from "react"
+
 
 type Props = {
   setActiveSection?: (id: string) => void 
 }
 
-export default function PlaySection({ setActiveSection }: Props) {
+export default function PlaySection({}: Props) {
 
 
 
@@ -14,10 +14,10 @@ export default function PlaySection({ setActiveSection }: Props) {
       className="h-[100vh] flex flex-col items-center justify-center relative"
     >
       
-      {/* Fondo suave (igual estilo que las otras secciones) */}
+      {/* fondo suave */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-100/10 via-transparent to-purple-100/10 pointer-events-none" />
 
-      {/* Contenido */}
+      {/* contenido */}
       <div className="z-10 text-center pointer-events-none">
 
         <h2 className="text-5xl font-bold text-gray-800 pointer-events-auto">

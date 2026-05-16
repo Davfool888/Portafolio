@@ -1,6 +1,6 @@
 import { Matrix4, Vector3 } from "three"
 import type { Cubie } from "./cubeModel"
-import { positionViewDirection } from "three/src/nodes/TSL.js"
+
 
 
 export class CubeEngine {

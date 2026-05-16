@@ -10,7 +10,7 @@ import { rotateCubeFace } from "../../logic/rubikEngine"
 
 type RubikCubeProps = {
     cubies: Cubie[]
-    explode: boolean
+   
 
     move: MoveType | null
     isAnimating: boolean
@@ -22,7 +22,6 @@ type RubikCubeProps = {
 
 export default function RubikCube({
     cubies,
-    explode,
     move,
     isAnimating,
     setCubies,
@@ -33,7 +32,7 @@ export default function RubikCube({
     const [angle, setAngle] = useState(0)
 
     const groupRef = useRef<Group>(null!)
-    const spread = explode ? 1.8 : 1
+    
 
     // animacion visual
     useFrame((_state, delta) => {
@@ -62,7 +61,7 @@ export default function RubikCube({
                 case "D": return rotateCubeFace(prev, "y", -1, (-direction as 1 | -1))
                 case "L": return rotateCubeFace(prev, "x", -1, (-direction as 1 | -1))
                 case "B": return rotateCubeFace(prev, "z", -1, (-direction as 1 | -1))
-                // Rotaciones de las capas medias "2"
+                // rotaciones de las capas medias
                 case "M": return rotateCubeFace(prev, "x", 0, (-direction as 1 | -1))
                 case "N": return rotateCubeFace(prev, "y", 0, (-direction as 1 | -1))
                 case "W": return rotateCubeFace(prev, "z", 0, direction)
@@ -83,14 +82,9 @@ export default function RubikCube({
 
                 let matrix = c.matrix.clone()
 
-                // funcion de explode (expandir)
-                if (explode) {
-                    matrix.multiply(
-                        new Matrix4().makeScale(spread, spread, spread)
-                    )
-                }
+              
 
-                // Animacion visual, no real
+                // animacion visual, no real
                 const isTop = c.position[1] === 1
                 const isRight = c.position[0] === 1
                 const isFront = c.position[2] == 1

@@ -59,7 +59,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             isDragging.current = false;
             document.body.style.cursor = 'auto';
 
-            //   Alineacion magnetica
+            // alineacion magnetica
             const snapX = Math.round(targetDragRot.current.x / (Math.PI / 2)) * (Math.PI / 2);
             const snapY = Math.round(targetDragRot.current.y / (Math.PI / 2)) * (Math.PI / 2);
 
@@ -81,23 +81,23 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             let bestIndex = projectIndex
             let maxDot = -Infinity
 
-            faces.forEach(face =>{
-                const centerCubie = cubies.find(c=> c.id === face.id)
-                if(centerCubie){
+            faces.forEach(face => {
+                const centerCubie = cubies.find(c => c.id === face.id)
+                if (centerCubie) {
                     const localNormal = face.normal.clone().transformDirection(centerCubie.matrix).normalize()
                     const worldNormal = localNormal.clone().applyQuaternion(finalQuat).normalize()
                     const dot = worldNormal.dot(cameraVectors.current.targetNormal)
 
-                    if(dot > maxDot){
+                    if (dot > maxDot) {
                         maxDot = dot
                         bestIndex = face.index
                     }
                 }
             })
 
-            if(bestIndex !== projectIndex && setProjectIndex){
+            if (bestIndex !== projectIndex && setProjectIndex) {
                 setProjectIndex(bestIndex)
-            }else{
+            } else {
                 targetDragRot.current.x = snapX
                 targetDragRot.current.y = snapY
             }
@@ -122,7 +122,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
         let targetScale = 1
         const targetQuat = new Quaternion()
 
-        // HOME
+        // home
         if (offset < 0.2) {
             const progress = offset / 0.2
             targetX = 2.5
@@ -131,11 +131,11 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetScale = 0.70
             targetQuat.setFromEuler(new Euler(0, progress * Math.PI * 0.5, 0))
 
-            // WORK
+            // work
         } else if (offset < 0.4) {
             const progress = (offset - 0.2) / 0.2
 
-            // Hacemos que llegue a su posición final más rápido (en el primer 30% del scroll de la sección)
+            // que llegue a la posicion rapido (en el 30% del scroll)
             const moveProgress = Math.min(progress / 0.3, 1.0)
             targetX = MathUtils.lerp(2.0, 0, moveProgress)
             targetY = MathUtils.lerp(0.5, 0, moveProgress)
@@ -195,7 +195,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
                 const alingMatrix = targetMatrix.multiply(whiteMatrix.invert())
                 alignQuat.setFromRotationMatrix(alingMatrix)
 
-               cameraVectors.current.screenRight.copy(screenRight);
+                cameraVectors.current.screenRight.copy(screenRight);
                 cameraVectors.current.screenUp.copy(screenUp);
                 cameraVectors.current.alignQuat.copy(alignQuat);
                 cameraVectors.current.targetNormal.copy(targetNormal);
@@ -232,7 +232,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
                 targetScale = MathUtils.lerp(0.8, 1, (progress - 0.8) / 0.2);
             }
 
-            // ABOUT
+            // about
         } else if (offset < 0.6) {
             const progress = (offset - 0.4) / 0.2
             targetX = -5
@@ -240,8 +240,11 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetZ = 2
             targetScale = 1
             targetQuat.setFromEuler(new Euler(MathUtils.lerp(0.5, 0, progress), Math.PI * 1.5 + progress * Math.PI, 0))
-
-            // CONTACT
+            dragRot.current.x = 0;
+            dragRot.current.y = 0;
+            targetDragRot.current.x = 0;
+            targetDragRot.current.y = 0;
+            // contact
         } else if (offset < 0.8) {
             const progress = (offset - 0.6) / 0.2
             targetX = 0
@@ -249,7 +252,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetZ = MathUtils.lerp(-2, 0, progress)
             targetQuat.setFromEuler(new Euler(0, Math.PI * 2.5 + progress * Math.PI * 0.5, 0))
 
-            // PLAY
+            // play
         } else {
             const progress = (offset - 0.8) / 0.2
             targetX = MathUtils.lerp(0, 0, progress)

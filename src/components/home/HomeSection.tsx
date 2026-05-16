@@ -8,7 +8,7 @@ type Props = {
   skillsCarouselIndex: number
 }
 
-export default function HomeSection({ setActiveSection, mainTitleToggle,skillsCarouselIndex  }: Props) {
+export default function HomeSection({ mainTitleToggle,skillsCarouselIndex  }: Props) {
 
 const showName = mainTitleToggle
 
@@ -32,10 +32,10 @@ const showName = mainTitleToggle
       id="home"
       className="h-[100vh] flex items-center relative"
     >
-      {/* CONTENIDO */}
+      {/* contenido */}
       <div className="container mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center z-10 pointer-events-none">
 
-        {/* IZQUIERDA */}
+        {/* izquierda */}
         <div className="flex flex-col gap-8 pointer-events-auto">
 
           <div className="flex gap-6 items-center">
@@ -99,7 +99,7 @@ const showName = mainTitleToggle
 
         </div>
 
-        {/* DERECHA */}
+        {/* derecha */}
         <div className="relative w-full h-[500px] pointer-events-none">
         </div>
 

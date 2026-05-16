@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { transform } from 'framer-motion'
-import { div } from 'three/tsl'
 import { Minimize2 } from 'lucide-react'
 
 
@@ -14,7 +12,7 @@ const CARDS_DATA = [
     title: "ING de software",
     description: "Estudie Ing de software en el instituto universitario Politecnico Gran Colombiano, Finalice todas las materias y requisitos y en el momento estoy esperando es la graduacion.",
     color: "bg-white/80",
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop", // Imagen de ejemplo
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600&auto=format&fit=crop", // imagen de ejemplo
     skills: ["Lógica", "Algoritmos", "Patrones"]
   },
   {
@@ -53,26 +51,27 @@ const CARDS_DATA = [
 
 
 
-export default function AboutSection({ setActiveSection }: Props) {
+export default function AboutSection({}: Props) {
 
 
-  // Const for the infinity stacked carousel
+  // posicion actual del carrusel
   const [activeIndex, setActiveIndex] = useState(2)
 
-  // Estado para la transicion de las cartas de forma redonda a forma de carrusel
+  // estado para cambiar entre abanico, stack y carrusel
   const [viewMode, setViewMode] = useState<"fan" | "stack" | "carousel">("fan")
 
-  // Nuevo estado para que las cards se puedan expandir y mostrar mas informacion a detalle
+  // estado para abrir una card con mas informacion
   const [detailedCardId, setDetailCardId] = useState<number | null>(null)
 
   const [isHovered, setIsHovered] = useState(false)
 
 
-  // Movimiento del carrusel infinito hacia adelante
+  // mover cards hacia adelante
   const handleNextCard = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % CARDS_DATA.length)
   }
-  // Movimiento del carrusel infinito hacia atras
+
+  // mover cards hacia atras
   const handlePrevCard = () => {
     setActiveIndex((prevIndex) => (prevIndex - 1 + CARDS_DATA.length) % CARDS_DATA.length)
   }
@@ -85,12 +84,13 @@ export default function AboutSection({ setActiveSection }: Props) {
     } else if (offset < -Math.floor(totalCards / 2)) {
       offset += totalCards
     }
+
     return offset
   }
 
 
 
-  // Logica de despligue de las cartas al darle click
+  // abrir las cards y cambiar al modo carrusel
   const handleCardClick = (index: number) => {
 
     if (viewMode === "fan") {
@@ -100,9 +100,13 @@ export default function AboutSection({ setActiveSection }: Props) {
       setTimeout(() => {
         setViewMode("carousel")
       }, 700)
+
     } else if (viewMode === "carousel") {
+
       const offset = getRelativeOffset(index, activeIndex, CARDS_DATA.length)
+
       if (offset === 1) handleNextCard()
+
       if (offset === -1) handlePrevCard()
     }
   }
@@ -119,10 +123,15 @@ export default function AboutSection({ setActiveSection }: Props) {
 
 
 
+  // estilos y posiciones de cada card
   const getCardStyle = (index: number) => {
+
     if (viewMode === "carousel") {
+
       const offset = getRelativeOffset(index, activeIndex, CARDS_DATA.length)
+
       const isVisible = Math.abs(offset) <= 2
+
       return {
         transform: `translateX(${offset * 110}px) translateY(0px) scale(${1 - Math.abs(offset) * 0.15}) rotateZ(0deg)`,
         zIndex: CARDS_DATA.length - Math.abs(offset),
@@ -133,7 +142,9 @@ export default function AboutSection({ setActiveSection }: Props) {
     }
 
     if (viewMode === "stack") {
+
       const isSelected = index === activeIndex
+
       return {
         transform: `translateX(0px) translateY(0px) scale(1) rotateZ(0deg)`,
         zIndex: isSelected ? 10 : 1,
@@ -153,7 +164,7 @@ export default function AboutSection({ setActiveSection }: Props) {
 
     return {
       transform: `translateX(${translateX}px) translateY(${translateY}px) scale(1) rotateZ(${rotateZ}deg)`,
-      zIndex: index, 
+      zIndex: index,
       opacity: 1,
       visibility: 'visible' as const,
       pointerEvents: 'auto' as const
@@ -161,10 +172,13 @@ export default function AboutSection({ setActiveSection }: Props) {
   }
 
 
+  // movimiento automatico del carrusel
   useEffect(() => {
+
     let autoplayTimer: ReturnType<typeof setInterval>
 
     if(viewMode === "carousel" && !isHovered && detailedCardId == null ){
+
       autoplayTimer = setInterval(()=>{
         handleNextCard()
       }, 2000)
@@ -175,6 +189,7 @@ export default function AboutSection({ setActiveSection }: Props) {
         clearInterval(autoplayTimer)
       }
     }
+
   }, [viewMode, isHovered, detailedCardId, activeIndex])
 
 
@@ -184,30 +199,31 @@ export default function AboutSection({ setActiveSection }: Props) {
       className="h-[100vh] w-full flex items-center relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-purple-100/10 via-transparent to-cyan-100/10 pointer-events-none" />
+
       <div className="container mx-auto px-8 w-full h-full grid grid-cols-3 gap-8 z-10 pointer-events-none">
 
         <div className="col-span-1 pointer-events-none" />
+
         <div className="col-span-2 flex flex-col justify-center items-center pointer-events-auto h-full">
 
           <div className="self-start pl-8 mb-12 flex items-center gap-6">
             <h2 className="text-5xl font-bold text-gray-800 m-0">
               About Me
             </h2>
-            </div>
+          </div>
 
-          {/* carousel container div */}
-          <div className="relative w-full h-[500px] flex justify-center items-center perspective-1000"
-          onMouseEnter={()=> setIsHovered(true)}
-          onMouseLeave={()=> setIsHovered(false)}
+          {/* contenedor principal del carrusel */}
+          <div
+            className="relative w-full h-[500px] flex justify-center items-center perspective-1000"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
 
             {CARDS_DATA.map((card, index) => {
 
-
               const offset = getRelativeOffset(index, activeIndex, CARDS_DATA.length)
 
               const isCenter = viewMode === "carousel" && offset === 0
-
 
               return (
                 <div
@@ -216,7 +232,8 @@ export default function AboutSection({ setActiveSection }: Props) {
                   className={`absolute w-72 h-96 p-8 rounded-3xl shadow-xl border border-white/40 backdrop-blur-lg transition-all duration-700 ease-in-out flex flex-col ${card.color} ${viewMode === 'fan' ? 'cursor-pointer hover:-translate-y-4 hover:shadow-2xl' : ''}`}
                   style={getCardStyle(index)}
                 >
-                 {isCenter && (
+
+                  {isCenter && (
                     <button
                       onClick={handleMinimize}
                       className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full 
@@ -229,6 +246,7 @@ export default function AboutSection({ setActiveSection }: Props) {
                       <Minimize2 className="w-4 h-4 transition-transform group-active:scale-90" strokeWidth={2.5} />
                     </button>
                   )}
+
                   <h3 className="text-2xl font-bold mb-4 text-gray-800">
                     {card.title}
                   </h3>
@@ -236,14 +254,13 @@ export default function AboutSection({ setActiveSection }: Props) {
                   <p className='text-lg text-gray-600 flex-grow'>
                     {card.description}
                   </p>
-                  <div className="mt-auto flex justify-between items-end w-full">
 
+                  <div className="mt-auto flex justify-between items-end w-full">
 
                     <button
                       className="px-4 py-2 bg-black/5 hover:bg-black/10 rounded-xl text-sm font-semibold text-gray-700 transition-colors pointer-events-auto"
                       onClick={(e) => {
                         e.stopPropagation()
-
                         setDetailCardId(card.id)
                       }}
                     >
@@ -257,7 +274,7 @@ export default function AboutSection({ setActiveSection }: Props) {
                     )}
 
                     {viewMode === "fan" && (
-                      <div className="text-xs font-semibold text-gray-400 pb-2 pointer-events-none" >
+                      <div className="text-xs font-semibold text-gray-400 pb-2 pointer-events-none">
                         Click to expende
                       </div>
                     )}
@@ -268,26 +285,27 @@ export default function AboutSection({ setActiveSection }: Props) {
               )
             })}
 
-
           </div>
         </div>
       </div>
 
 
-      {/* VIEW MORE INTERFACES */}
+      {/* modal de view more */}
 
       {detailedCardId !== null &&(
-        <div  
-        className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/40 backdrop-blur-md pointer-events-auto transition-opacity"
-        onClick={() => setDetailCardId(null)}
+        <div
+          className="absolute inset-0 z-[100] flex items-center justify-center p-8 bg-black/40 backdrop-blur-md pointer-events-auto transition-opacity"
+          onClick={() => setDetailCardId(null)}
         >
-          <div 
-          className="bg-white/90 backdrop-blur-xl w-full max-w-5xl h-[65vh] rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex overflow-hidden border border-white/50 relative"
-          onClick={(e) =>e.stopPropagation()}
+
+          <div
+            className="bg-white/90 backdrop-blur-xl w-full max-w-5xl h-[65vh] rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex overflow-hidden border border-white/50 relative"
+            onClick={(e) =>e.stopPropagation()}
           >
 
-            {/* Creacion del lado izquiero de mi card */}
+            {/* parte izquierda de la card */}
             <div className="w-1/2 p-14 flex flex-col justify-center">
+
               <span className="text-purple-500 font-bold tracking-widest uppercase text-sm mb-4">
                 Detalle de experiencia
               </span>
@@ -295,29 +313,36 @@ export default function AboutSection({ setActiveSection }: Props) {
               <h2 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">
                 {CARDS_DATA.find(c=> c.id === detailedCardId)?.title}
               </h2>
+
               <p className="text-xl text-gray-600 leading-relaxed">
                 {CARDS_DATA.find(c=>c.id === detailedCardId)?.description}
               </p>
+
             </div>
 
-            {/* Creacion del lado derecho de mi card que contiene imagen y skills*/}
+            {/* parte derecha con imagen y skills */}
             <div className="w-1/2 bg-gradient-to-br from-gray-50 to-gray-100 p-12 flex flex-col justify-center items-center border-l border-gray-200/50">
-              <img 
-              src={CARDS_DATA.find((c)=>c.id == detailedCardId)?.image} 
-              alt="Card Media" 
-              className="w-full h-64 object-cover rounded-2xl shadow-lg mb-10"/>
+
+              <img
+                src={CARDS_DATA.find((c)=>c.id == detailedCardId)?.image}
+                alt="Card Media"
+                className="w-full h-64 object-cover rounded-2xl shadow-lg mb-10"
+              />
+
               <div className="flex gap-3 flex-wrap justify-center">
-                 {CARDS_DATA.find(c => c.id == detailedCardId)?.skills.map((skill, index)=>(
+
+                {CARDS_DATA.find(c => c.id == detailedCardId)?.skills.map((skill, index)=>(
                   <span
-                  key={index}
-                  className='px-5 py-2 bg-white border border-gray-200 shadow-sm text-gray-700 font-semibold rounded-full text-sm'
+                    key={index}
+                    className='px-5 py-2 bg-white border border-gray-200 shadow-sm text-gray-700 font-semibold rounded-full text-sm'
                   >
                     {skill}
                   </span>
-                 ))}
-              </div>
-            </div>
+                ))}
 
+              </div>
+
+            </div>
 
           </div>
         </div>

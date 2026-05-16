@@ -10,16 +10,16 @@ type MoveControlProps = {
 }
 
 export default function MoveControl({ label, position, rotation, onMove }: MoveControlProps) {
-    // Estado para gestionar cuál flecha está brillando
+    // estado para ver que flecha brilla
     const [hovered, setHovered] = useState<string | null>(null);
 
-    // Geometría premium en 3D para la flecha (Solid Chevron Curve)
+    // geometria 3d para la flecha
     const arrowGeometry = useMemo(() => {
         const shape = new THREE.Shape();
         
-        const A = 0.2; // Inicio del arco
-        const C = Math.PI - 0.2; // Punta de la flecha
-        const B = C - 0.3; // Base de la punta
+        const A = 0.2; // inicio del arco
+        const C = Math.PI - 0.2; // punta de la flecha
+        const B = C - 0.3; // base de la punta
         
         const R_mid = 0.55;
         const R_out = 0.59;
@@ -27,7 +27,7 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
         const R_head_out = 0.66;
         const R_head_in = 0.44;
         
-        // Dibujo de la flecha
+        // dibujo de la flecha
         shape.absarc(0, 0, R_out, A, B, false);
         shape.lineTo(R_head_out * Math.cos(B), R_head_out * Math.sin(B));
         shape.lineTo(R_mid * Math.cos(C), R_mid * Math.sin(C));
@@ -63,7 +63,7 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
                     />
                 </mesh>
 
-                {/* {Letra de indicacion del movimiento} */}
+                {/* letra de indicacion */}
                 <Text
                     position={[0, 0.05, 0]}
                     rotation={[-Math.PI / 2, 0, 0]}
@@ -74,7 +74,7 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
                     {label}
                 </Text>
 
-                {/* Grupo horario (CW) */}
+                {/* grupo horario */}
                 <group 
                     onClick={(e) => { e.stopPropagation(); onMove(label); }}
                     onPointerOver={() => { setHovered('cw'); document.body.style.cursor = 'pointer'; }}
@@ -95,14 +95,14 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
                         />
                     </mesh>
                     
-                    {/* HITBOX */}
+                    {/* hitbox */}
                     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.55, 0.05, 0]}>
                         <planeGeometry args={[0.4, 1.2]} />
                         <meshBasicMaterial visible={false} />
                     </mesh>
                 </group>
 
-                {/* Grupo antihorario (CCW) */}
+                {/* grupo antihorario */}
                 <group 
                     onClick={(e) => { e.stopPropagation(); onMove(`${label}'`); }}
                     onPointerOver={() => { setHovered('ccw'); document.body.style.cursor = 'pointer'; }}
@@ -122,7 +122,7 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
                         />
                     </mesh>
 
-                    {/* HITBOX */}
+                    {/* hitbox */}
                     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-0.55, 0.05, 0]}>
                         <planeGeometry args={[0.4, 1.2]} />
                         <meshBasicMaterial visible={false} />

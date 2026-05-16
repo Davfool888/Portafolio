@@ -5,7 +5,7 @@ import{
   SiJenkins, SiGithubactions, SiTensorflow 
 } from 'react-icons/si';
 
-import { FaDatabase, FaEye, FaRobot, FaTerminal, FaLanguage, FaFileCode } from 'react-icons/fa';
+import { FaDatabase, FaTerminal, FaLanguage,  } from 'react-icons/fa';
 
 export const categoriesData = [
   {

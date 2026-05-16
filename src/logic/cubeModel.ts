@@ -37,7 +37,7 @@ export function createCubeModel(): Cubie[] {
                     position: [x, y, z],
                     matrix,
                     rotation,
-                    // Color de fondo
+                    // color de fondo
                     baseColor: "#000000",
                     colors: {
                         right: x === 1 ? "#FF7EB9" : undefined,   
