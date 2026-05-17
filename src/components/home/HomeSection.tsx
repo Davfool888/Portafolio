@@ -2,6 +2,7 @@ import ClayButton from '../ui/ClayButton'
 import RubikSkillsCarousel from '../../data/RubikSkillsCarousel'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLanguage } from '../../context/LanguageContext'
+import { FileText } from 'lucide-react'
 
 type Props = {
   setActiveSection?: (id: string) => void
@@ -108,7 +109,7 @@ export default function HomeSection({ mainTitleToggle,skillsCarouselIndex, onNav
           </div>
 
           {/* botones de navegacion */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
 
             {/* esto mueve la pagina hacia projects */}
             <ClayButton onClick={() => onNavigate?.('projects')}>
@@ -118,6 +119,14 @@ export default function HomeSection({ mainTitleToggle,skillsCarouselIndex, onNav
             {/* esto mueve la pagina hacia contact */}
             <ClayButton variant="secondary" onClick={() => onNavigate?.('contact')}>
               {t("Contacto", "Contact")}
+            </ClayButton>
+
+            {/* boton que abre el pdf del cv */}
+            <ClayButton variant="secondary" href="/documents/DavidHerrera_CV.pdf">
+              <span className="flex items-center gap-2">
+                <FileText size={18} />
+                {t("Hoja de Vida", "Resume")}
+              </span>
             </ClayButton>
 
           </div>

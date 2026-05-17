@@ -2,10 +2,11 @@ interface Props {
     children: React.ReactNode
     variant?: "primary" | "secondary"
     onClick?: () => void
+    href?: string
 }
 
 
-export default function ClayButton({ children, variant = "primary", onClick }: Props) {
+export default function ClayButton({ children, variant = "primary", onClick, href }: Props) {
 
     
     const styles = {
@@ -21,16 +22,30 @@ export default function ClayButton({ children, variant = "primary", onClick }: P
     `
     }
 
-    return (
-        <button className={`
+    const baseClass = `
       px-8 py-4 rounded-2xl font-semibold
       transition-all duration-300
       hover:-translate-y-1 hover:scale-[1.02]
       active:scale-[0.98]
       ${styles[variant]}
-    `}
-            onClick={onClick}
-        >
+    `
+
+    // si tiene href se renderiza como link
+    if (href) {
+        return (
+            <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={baseClass}
+            >
+                {children}
+            </a>
+        )
+    }
+
+    return (
+        <button className={baseClass} onClick={onClick}>
             {children}
         </button>
     )

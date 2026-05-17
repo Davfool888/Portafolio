@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { FaWhatsapp, FaLinkedin, FaEnvelope, FaGithub } from 'react-icons/fa'
 import { useLanguage } from '../../context/LanguageContext'
 
-
 type Props = {
   setActiveSection?: (id: string) => void
 }
@@ -99,17 +98,17 @@ export default function ContactSection({ }: Props) {
 
   // Logica dinamica del input de contacto
   let inputType = "email"
-  let inputPlaceholder = "Email"
+  let inputPlaceholder = t("Correo electrónico", "Email Address")
 
   if (form.contactMethod === "whatsapp") {
 
     inputType = "tel"
-    inputPlaceholder = "Número de WhatsApp"
+    inputPlaceholder = t("Número de WhatsApp", "WhatsApp Number")
 
   } else if (form.contactMethod === "linkedin") {
 
     inputType = "url"
-    inputPlaceholder = "Link de perfil de LinkedIn"
+    inputPlaceholder = t("Enlace de LinkedIn", "LinkedIn URL")
   }
 
   return (
@@ -201,13 +200,7 @@ export default function ContactSection({ }: Props) {
               <input
                 type={inputType}
                 name='contactValue'
-                placeholder={
-                  form.contactMethod === "whatsapp"
-                    ? t("Número de WhatsApp", "WhatsApp Number")
-                    : form.contactMethod === "linkedin"
-                    ? t("Enlace de LinkedIn", "LinkedIn URL")
-                    : t("Correo electrónico", "Email Address")
-                }
+                placeholder={inputPlaceholder}
                 value={form.contactValue}
                 className="px-5 py-4 rounded-2xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full"
                 onChange={handleChange}
