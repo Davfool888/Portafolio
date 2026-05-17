@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { categoriesData } from "./categoriesData";
+import { useLanguage } from "../context/LanguageContext";
 
 type Props = {
   skillsCarouselIndex: number
@@ -26,15 +27,16 @@ function ClaySkillCard({
         transition-all duration-300 group
       `}
     >
-      {/* brillo */}
+
+      {/* Capa de brillo para el efecto clay */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-black/5 rounded-[2rem] pointer-events-none" />
 
-      {/* icono */}
+      {/* Icono principal de la skill */}
       <div className="relative text-[40px] drop-shadow-xl group-hover:scale-110 transition-transform duration-300 z-10">
         {icon}
       </div>
 
-      {/* texto */}
+      {/* Nombre de la tecnologia */}
       <div className="relative text-gray-800 dark:text-gray-100 font-extrabold text-sm tracking-wide z-10 mt-1 text-center px-2 leading-tight">
         {name}
       </div>
@@ -46,22 +48,24 @@ export default function RubikSkillsCarousel({
   skillsCarouselIndex
 }: Props) {
 
+  const { language } = useLanguage()
+
   const dataSkills = categoriesData
 
-  // indice sincronizado con movimientos reales del cubo
+  // Indice sincronizado con los movimientos del cubo
   const currentIndex =
     ((skillsCarouselIndex % dataSkills.length) + dataSkills.length) %
     dataSkills.length
 
   const currentCategory = dataSkills[currentIndex]
 
-  // alternar direccion visual
+  // Esto alterna la direccion visual de las animaciones
   const flipDirection = skillsCarouselIndex % 2 === 0
 
-  // direccion para animacion del titulo
+  // Direccion usada para animar el titulo
   const direction = flipDirection ? 1 : -1
 
-  // variantes titulo
+  // Variantes para animar el titulo
   const titleVariants = {
     enter: (dir: number) => ({
       rotateY: dir > 0 ? 90 : -90,
@@ -79,7 +83,7 @@ export default function RubikSkillsCarousel({
     }),
   }
 
-  // variantes izquierda
+  // Variantes de la card izquierda
   const leftSkillVariants = {
     enter: (flip: boolean) => ({
       rotateX: flip ? 90 : -90,
@@ -97,7 +101,7 @@ export default function RubikSkillsCarousel({
     }),
   }
 
-  // variantes derecha
+  // Variantes de la card derecha
   const rightSkillVariants = {
     enter: (flip: boolean) => ({
       rotateX: flip ? -90 : 90,
@@ -118,11 +122,10 @@ export default function RubikSkillsCarousel({
   return (
     <div className="flex flex-col gap-8 w-full max-w-lg pointer-events-auto">
 
-      {/* header */}
+      {/* Header del carousel */}
       <div className="flex items-center justify-center bg-white/20 dark:bg-black/20 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-lg border border-white/30 dark:border-white/10">
 
-       
-        {/* titulo */}
+        {/* Contenedor con perspectiva para el titulo */}
         <div
           style={{ perspective: 1000 }}
           className="relative h-8 flex-1 flex items-center justify-center overflow-visible"
@@ -145,18 +148,17 @@ export default function RubikSkillsCarousel({
               }}
               className="absolute text-xl font-bold text-gray-800 dark:text-gray-100 tracking-wide uppercase"
             >
-              {currentCategory.category}
+              {currentCategory.category[language]}
             </motion.h3>
           </AnimatePresence>
         </div>
 
-      
       </div>
 
-      {/* cards */}
+      {/* Cards de tecnologias */}
       <div className="flex gap-4 items-center justify-center">
 
-        {/* izquierda */}
+        {/* Card izquierda */}
         <div
           style={{ perspective: 1000 }}
           className="relative w-32 h-32"
@@ -189,7 +191,7 @@ export default function RubikSkillsCarousel({
           </AnimatePresence>
         </div>
 
-        {/* centro */}
+        {/* Card central */}
         <div className="relative w-32 h-32 z-10">
           <AnimatePresence mode="popLayout">
             <motion.div
@@ -218,7 +220,7 @@ export default function RubikSkillsCarousel({
           </AnimatePresence>
         </div>
 
-        {/* derecha */}
+        {/* Card derecha */}
         <div
           style={{ perspective: 1000 }}
           className="relative w-32 h-32"

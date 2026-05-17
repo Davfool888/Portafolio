@@ -1,6 +1,6 @@
 import { OrbitControls, useScroll } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
-import React, { useRef } from "react"
+import React, { useRef, Suspense } from "react"
 import RubikCube from "../components/cube/RubikCube"
 import type { Cubie } from "../logic/cubeModel"
 import MoveControl from "../components/cube/rotationFaces/MoveControl"
@@ -105,7 +105,7 @@ export default function MainScene({ cubies, isRotate, move, isAnimating, setCubi
                 </group>
 
                 {activeSection === "play" && (
-                    <>
+                    <Suspense fallback={null}>
                         <MoveControl
                             label="U"
                             position={[0, 2.5, 0]}
@@ -147,7 +147,7 @@ export default function MainScene({ cubies, isRotate, move, isAnimating, setCubi
                             rotation={[-Math.PI / 2, 0, 0]}
                             onMove={executeMove}
                         />
-                    </>
+                    </Suspense>
                 )}
 
             </ScrollCubeController>

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
+import { useLanguage } from "../../context/LanguageContext"
 
 type Props = {
   sections: string[]
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export default function Navbar({ sections, onNavigate, activeSection, scrollElRef, scrollReady  }: Props) {
+  const { t } = useLanguage()
 
   // controlador de estados para esconder navbar
   const [hasScrolled, setHasScrolled] = useState(false)
@@ -67,6 +69,18 @@ export default function Navbar({ sections, onNavigate, activeSection, scrollElRe
         <div className="flex gap-2 rounded-full border border-white/40 dark:border-white/10 bg-white/80 dark:bg-black/30 px-6 py-3 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.12),inset_0_2px_10px_rgba(255,255,255,0.9)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.5),inset_0_2px_10px_rgba(255,255,255,0.1)]">
           {sections.map((section) => {
             const isActive = activeSection === section
+            
+            // traduccion de labels de seccion
+            const sectionLabels: Record<string, { es: string, en: string }> = {
+              home: { es: "Inicio", en: "Home" },
+              projects: { es: "Proyectos", en: "Projects" },
+              about: { es: "Sobre mí", en: "About Me" },
+              contact: { es: "Contacto", en: "Contact" },
+              play: { es: "Jugar", en: "Play" }
+            }
+            
+            const label = sectionLabels[section] ? t(sectionLabels[section].es, sectionLabels[section].en) : section
+
             return (
               <button
                 key={section}
@@ -76,7 +90,7 @@ export default function Navbar({ sections, onNavigate, activeSection, scrollElRe
                   : 'text-gray-700 dark:text-gray-300 hover:bg-purple-200/40 dark:hover:bg-purple-500/20 hover:-translate-y-0.5'
                   }`}
               >
-                {section}
+                {label}
                 {isActive && (
                   <div className="absolute -bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)]" />
                 )}
