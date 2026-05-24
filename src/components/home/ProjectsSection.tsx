@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import SkillCard from '../ui/SkillCard'
 import { projects } from '../../data/projects'
-import { Globe, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Maximize2, X } from "lucide-react"
+import { Globe, Maximize2, X } from "lucide-react"
 import { AnimatePresence, motion } from 'framer-motion'
 import { SiGithub } from "react-icons/si"
 import { useLanguage } from '../../context/LanguageContext'
@@ -15,38 +15,44 @@ type Props = {
 export default function ProjectsSection({ projectIndex, setProjectIndex }: Props) {
   const { language, t } = useLanguage()
 
-  // estado para la direccion de la rotacion 3D
+  // direccion de la rotacion
   const [direction, setDirection] = useState(0)
 
-  // estado del carrusel de imagenes
+  // carrusel de imagenes
   const [imageIndex, setImageIndex] = useState(0)
 
   // estado para expandir imagenes
   const [expandedImage, setExpandedImage] = useState(false)
 
-  // esto sirve para saber que proyecto queda arriba abajo izquierda y derecha
-  const adjacency: Record<number, { up: number, down: number, left: number, right: number }> = {
-    0: { up: 2, down: 3, left: 4, right: 5 },
-    1: { up: 3, down: 2, left: 5, right: 4 },
-    2: { up: 0, down: 1, left: 4, right: 5 },
-    3: { up: 0, down: 1, left: 5, right: 4 },
-    4: { up: 0, down: 1, left: 3, right: 2 },
-    5: { up: 0, down: 1, left: 2, right: 3 }
-  }
+  // bloqueo para evitar doble click rapido
+  const isNavigating = useRef(false)
 
-  // mover entre proyectos usando las flechas
-  const navTo = (dir: 'up' | 'down' | 'left' | 'right') => {
+  // secuencia de caras pasando por opuestas
+  // 0 top / 1 bottom / 2 front / 3 back / 4 left = 5 caras
+  const faceSequence = [0, 1, 2, 3, 4]
 
-    const nextIndex = adjacency[projectIndex][dir];
+  // indice actual en la secuencia
+  const currentSeqIndex = faceSequence.indexOf(projectIndex) >= 0 ? faceSequence.indexOf(projectIndex) : 0
 
-    // esto cambia la direccion de la animacion del cubo gigante
-    if (dir === 'down' || dir === 'right') {
-      setDirection(-1);
-    } else {
-      setDirection(1);
-    }
+  // avanza o retrocede en la secuencia
+  const navTo = (dir: 'next' | 'prev') => {
 
-    setProjectIndex(nextIndex);
+    if (isNavigating.current) return
+    isNavigating.current = true
+
+    const nextSeqIndex = dir === 'next'
+      ? (currentSeqIndex + 1) % faceSequence.length
+      : (currentSeqIndex - 1 + faceSequence.length) % faceSequence.length
+
+    const nextFaceIndex = faceSequence[nextSeqIndex]
+
+    setDirection(dir === 'next' ? 1 : -1)
+    setProjectIndex(nextFaceIndex)
+
+    // desbloquea despues de la transicion
+    setTimeout(() => {
+      isNavigating.current = false
+    }, 900)
   }
 
   // proyecto actual
@@ -59,31 +65,78 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
     "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop"
   ]
 
-  // animacion principal del cubo gigante
+  // animacion del cubo girando en Y entre caras
   const fullSectionCubeVariants = {
 
     enter: (direction: number) => ({
-      rotateX: direction > 0 ? 90 : -90,
+      rotateY: direction > 0 ? 120 : -120,
+      rotateX: direction > 0 ? 20 : -20,
+      scale: 0.85,
       opacity: 0,
-      filter: "blur(10px)",
+      filter: "blur(14px)",
+      z: -200,
     }),
 
     center: {
+      rotateY: 0,
       rotateX: 0,
+      scale: 1,
       opacity: 1,
       filter: "blur(0px)",
+      z: 0,
     },
 
     exit: (direction: number) => ({
-      rotateX: direction > 0 ? -90 : 90,
+      rotateY: direction > 0 ? -120 : 120,
+      rotateX: direction > 0 ? -20 : 20,
+      scale: 0.85,
       opacity: 0,
-      filter: "blur(10px)",
+      filter: "blur(14px)",
+      z: -200,
     })
   }
 
   // resetear el carrusel de imagenes cuando cambia el proyecto
   useEffect(() => {
     setImageIndex(0)
+  }, [projectIndex])
+
+  // navegacion con click del mouse
+  useEffect(() => {
+
+    // referencia para saber si el click fue en esta seccion
+    const section = document.getElementById('projects')
+    if (!section) return
+
+    const handleMouseDown = (e: MouseEvent) => {
+
+      // click izquierdo avanza
+      if (e.button === 0) {
+        const target = e.target as HTMLElement
+
+        // no navega si el click fue en un boton o link
+        if (target.closest('a') || target.closest('button') || target.closest('[data-no-nav]')) return
+
+        navTo('next')
+      }
+    }
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+
+      // click derecho retrocede
+      navTo('prev')
+    }
+
+    section.addEventListener('mousedown', handleMouseDown)
+    section.addEventListener('contextmenu', handleContextMenu)
+
+    return () => {
+      section.removeEventListener('mousedown', handleMouseDown)
+      section.removeEventListener('contextmenu', handleContextMenu)
+    }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectIndex])
 
   // colores claros del degradado ambiental
@@ -110,6 +163,7 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
     <section
       id="projects"
       className="h-[100vh] flex items-center relative overflow-hidden"
+      style={{ cursor: 'pointer' }}
     >
 
       {/* luz ambiental clara */}
@@ -130,42 +184,7 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
         transition={{ duration: 1.5, ease: "easeInOut" }}
       />
 
-      {/* botones fijos alrededor del cubo */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] max-w-[350px] h-[450px] z-50 pointer-events-none">
 
-          {/* boton superior */}
-          <button
-            onClick={() => navTo('up')}
-            className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto"
-          >
-            <ChevronUp className="text-gray-700 dark:text-gray-300" size={24} />
-          </button>
-
-          {/* boton inferior */}
-          <button
-            onClick={() => navTo('down')}
-            className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto"
-          >
-            <ChevronDown className="text-gray-700 dark:text-gray-300" size={24} />
-          </button>
-
-          {/* boton izquierdo */}
-          <button
-            onClick={() => navTo('left')}
-            className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto"
-          >
-            <ChevronLeft className="text-gray-700 dark:text-gray-300" size={24} />
-          </button>
-
-          {/* boton derecho */}
-          <button
-            onClick={() => navTo('right')}
-            className="absolute -right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg transition-all hover:bg-purple-400/30 dark:hover:bg-purple-500/30 hover:scale-110 pointer-events-auto"
-          >
-            <ChevronRight className="text-gray-700 dark:text-gray-300" size={24} />
-          </button>
-
-      </div>
 
       {/* contenedor principal con perspectiva 3D */}
       <div className="container mx-auto px-12 z-10 relative w-full h-[600px] flex items-center justify-center perspective-[2000px]">
@@ -179,10 +198,18 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
+            transition={{ 
+              duration: 0.75, 
+              ease: [0.22, 1, 0.36, 1],
+              opacity: { duration: 0.4 },
+              filter: { duration: 0.5 }
+            }}
             style={{ transformOrigin: "50% 50% -450px" }}
-            className="absolute w-full h-full grid grid-cols-3 gap-16 items-center pointer-events-none"
+            className="absolute w-full h-full pointer-events-none"
           >
+
+            {/* contenedor de las 3 columnas principales */}
+            <div className="w-full h-full grid grid-cols-3 gap-16 items-center">
 
             {/* lado izquierdo */}
             <div className="flex flex-col justify-center gap-6 pointer-events-auto">
@@ -215,68 +242,11 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
 
             </div>
 
-            {/* parte central */}
-            <div className="relative w-full h-[500px] flex flex-col justify-end items-center pointer-events-none pb-4">
-
-              {/* links inferiores */}
-              <div className="w-full px-8 flex justify-between pointer-events-auto">
-
-                {/* boton de pagina web */}
-                <div className="relative w-40 h-[44px]">
-
-                  <a
-                    href={project.websiteUrl || undefined}
-                    target={project.websiteUrl ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    className={`absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-xl border border-white/50 dark:border-white/10 px-5 py-2.5 rounded-full font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all ${project.websiteUrl ? 'bg-white/40 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 dark:hover:bg-white/20 cursor-pointer' : 'bg-gray-300/40 dark:bg-gray-800/40 text-gray-400 dark:text-gray-600 cursor-not-allowed'}`}
-                    onClick={(e) => {
-                      if (!project.websiteUrl) {
-                        e.preventDefault();
-                      }
-                    }}
-                  >
-
-                    <Globe size={18} className={project.websiteUrl ? "text-cyan-600" : "text-gray-400 dark:text-gray-600"} />
-
-                    <span className="text-sm tracking-wide">
-                      {t("Página Web", "Website")}
-                    </span>
-
-                  </a>
-
-                </div>
-
-                {/* boton de github */}
-                <div className="relative w-36 h-[44px]">
-
-                  <a
-                    href={project.githubUrl || undefined}
-                    target={project.githubUrl ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    className={`absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-xl border border-white/50 dark:border-white/10 px-5 py-2.5 rounded-full font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all ${project.githubUrl ? 'bg-white/40 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 dark:hover:bg-white/20 cursor-pointer' : 'bg-gray-300/40 dark:bg-gray-800/40 text-gray-400 dark:text-gray-600 cursor-not-allowed'}`}
-                    onClick={(e) => {
-                      if (!project.githubUrl) {
-                        e.preventDefault();
-                      }
-                    }}
-                  >
-
-                    <SiGithub size={18} className={project.githubUrl ? "text-purple-600 dark:text-purple-400" : "text-gray-400 dark:text-gray-600"} />
-
-                    <span className="text-sm tracking-wide">
-                      GitHub
-                    </span>
-
-                  </a>
-
-                </div>
-
-              </div>
-
-            </div>
+            {/* parte central libre para el cubo */}
+            <div className="relative w-full h-[500px] pointer-events-none" />
 
             {/* lado derecho */}
-            <div className="relative w-full h-[500px] flex items-center justify-center pointer-events-auto">
+            <div data-no-nav className="relative w-full h-[500px] flex items-center justify-center pointer-events-auto">
 
               {currentImages.map((imgUrl, i) => {
 
@@ -367,6 +337,63 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
 
             </div>
 
+            </div>
+
+            {/* links globales al fondo */}
+            <div data-no-nav className="absolute -bottom-8 w-full flex justify-center gap-8 pointer-events-auto">
+
+              {/* boton de pagina web */}
+              <div className="relative w-40 h-[44px]">
+
+                <a
+                  href={project.websiteUrl || undefined}
+                  target={project.websiteUrl ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className={`absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-xl border border-white/50 dark:border-white/10 px-5 py-2.5 rounded-full font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all ${project.websiteUrl ? 'bg-white/40 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 dark:hover:bg-white/20 cursor-pointer' : 'bg-gray-300/40 dark:bg-gray-800/40 text-gray-400 dark:text-gray-600 cursor-not-allowed'}`}
+                  onClick={(e) => {
+                    if (!project.websiteUrl) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+
+                  <Globe size={18} className={project.websiteUrl ? "text-cyan-600" : "text-gray-400 dark:text-gray-600"} />
+
+                  <span className="text-sm tracking-wide">
+                    {t("Página Web", "Website")}
+                  </span>
+
+                </a>
+
+              </div>
+
+              {/* boton de github */}
+              <div className="relative w-36 h-[44px]">
+
+                <a
+                  href={project.githubUrl || undefined}
+                  target={project.githubUrl ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  className={`absolute inset-0 flex items-center justify-center gap-2 backdrop-blur-xl border border-white/50 dark:border-white/10 px-5 py-2.5 rounded-full font-bold shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all ${project.githubUrl ? 'bg-white/40 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-white/60 dark:hover:bg-white/20 cursor-pointer' : 'bg-gray-300/40 dark:bg-gray-800/40 text-gray-400 dark:text-gray-600 cursor-not-allowed'}`}
+                  onClick={(e) => {
+                    if (!project.githubUrl) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+
+                  <SiGithub size={18} className={project.githubUrl ? "text-purple-600 dark:text-purple-400" : "text-gray-400 dark:text-gray-600"} />
+
+                  <span className="text-sm tracking-wide">
+                    GitHub
+                  </span>
+
+                </a>
+
+              </div>
+
+            </div>
+
           </motion.div>
 
         </AnimatePresence>
@@ -429,6 +456,30 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
         </div>
 
       )}
+
+      {/* indicadores de cara actual */}
+      <div data-no-nav className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20 pointer-events-none">
+
+        {/* puntos */}
+        <div className="flex gap-2">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className={`rounded-full transition-all duration-500 ${
+                faceSequence[currentSeqIndex] === faceSequence[i]
+                  ? 'w-5 h-2 bg-purple-500 dark:bg-purple-400'
+                  : 'w-2 h-2 bg-gray-400/50 dark:bg-gray-600/50'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* hint de navegacion */}
+        <span className="text-xs text-gray-400 dark:text-gray-600 tracking-wide select-none">
+          {t('click izq / click der para navegar', 'left click / right click to navigate')}
+        </span>
+
+      </div>
 
     </section>
   )

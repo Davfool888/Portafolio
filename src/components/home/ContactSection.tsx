@@ -114,7 +114,7 @@ export default function ContactSection({ }: Props) {
   return (
     <section
       id="contact"
-      className="min-h-screen flex items-center relative py-20"
+      className="h-screen w-full flex items-center justify-center relative overflow-hidden"
     >
 
       {/* Fondo suave de la seccion */}
@@ -127,22 +127,22 @@ export default function ContactSection({ }: Props) {
         <div className="flex flex-col justify-center h-full max-w-xl pointer-events-auto">
 
           {/* Header principal */}
-          <div className="mb-10">
+          <div className="mb-6">
 
-            <h2 className="text-6xl font-extrabold text-gray-800 dark:text-gray-100 mb-4 tracking-tight drop-shadow-sm">
+            <h2 className="text-5xl lg:text-6xl font-extrabold text-gray-800 dark:text-gray-100 mb-2 tracking-tight drop-shadow-sm">
               {t("Hablemos", "Let's Talk")}
             </h2>
 
-            <p className="text-xl text-gray-500 dark:text-gray-400 font-medium">
+            <p className="text-lg text-gray-500 dark:text-gray-400 font-medium">
               {t("Cuéntame sobre tu proyecto y cómo prefieres ser contactado", "Tell me about your project and how you prefer to be contacted")}
             </p>
 
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
             {/* Selector del metodo de contacto */}
-            <div className="flex flex-col gap-3 mb-2">
+            <div className="flex flex-col gap-2 mb-1">
 
               <div className="flex gap-4 flex-wrap">
 
@@ -154,8 +154,8 @@ export default function ContactSection({ }: Props) {
                     <label
                       key={option.id}
                       className={`
-                        relative flex items-center gap-3 px-6 py-3 rounded-2xl cursor-pointer 
-                        transition-all duration-300 ease-in-out font-bold select-none backdrop-blur-lg shadow-sm border border-white/40 dark:border-white/10
+                        relative flex items-center gap-2 px-5 py-2.5 rounded-2xl cursor-pointer 
+                        transition-all duration-300 ease-in-out font-bold text-sm select-none backdrop-blur-lg shadow-sm border border-white/40 dark:border-white/10
                         ${isSelected 
                           ? `${option.activeColor} scale-105 border-transparent`
                           : "bg-white/50 dark:bg-black/20 text-gray-500 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-white/10 hover:-translate-y-1 grayscale opacity-70 hover:grayscale-0 hover:opacity-100" 
@@ -185,14 +185,14 @@ export default function ContactSection({ }: Props) {
             </div>
 
             {/* Inputs principales */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
 
               <input
                 type="text"
                 name='name'
                 placeholder={t("Nombre", "Name")}
                 value={form.name}
-                className="px-5 py-4 rounded-2xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full"
+                className="px-4 py-3 rounded-xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full"
                 onChange={handleChange}
               />
 
@@ -202,7 +202,7 @@ export default function ContactSection({ }: Props) {
                 name='contactValue'
                 placeholder={inputPlaceholder}
                 value={form.contactValue}
-                className="px-5 py-4 rounded-2xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full"
+                className="px-4 py-3 rounded-xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full"
                 onChange={handleChange}
               />
 
@@ -214,22 +214,22 @@ export default function ContactSection({ }: Props) {
               placeholder={t("Mensaje...", "Message...")}
               value={form.message}
               onChange={handleChange}
-              rows={5}
+              rows={3}
               required
-              className="px-5 py-4 rounded-2xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full resize-none"
+              className="px-4 py-3 rounded-xl border-none bg-white/60 dark:bg-black/30 backdrop-blur-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white/90 dark:focus:bg-black/50 text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 w-full resize-none"
             />
 
             {/* Boton para enviar */}
             <button
               type='submit'
               disabled={loading}
-              className="mt-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold text-lg py-4 rounded-2xl shadow-[0_10px_30px_rgba(168,85,247,0.4)] hover:shadow-[0_15px_40px_rgba(168,85,247,0.6)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 w-full"
+              className="mt-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold py-3 rounded-xl shadow-[0_10px_30px_rgba(168,85,247,0.4)] hover:shadow-[0_15px_40px_rgba(168,85,247,0.6)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 w-full"
             >
               {loading ? t("Enviando...", "Sending...") : t("Enviar Mensaje", "Send Message")}
             </button>
 
             {/* Feedback del formulario */}
-            <div className="h-6 flex items-center justify-center">
+            <div className="h-5 flex items-center justify-center text-sm">
 
               {status === "success" &&(
                 <p className='text-green-500 font-semibold animate-pulse'>
@@ -248,7 +248,7 @@ export default function ContactSection({ }: Props) {
           </form>
 
           {/* Redes sociales */}
-          <div className="mt-8 pt-8 border-t border-gray-200/50 dark:border-white/10 flex flex-col gap-4">
+          <div className="mt-4 pt-4 border-t border-gray-200/50 dark:border-white/10 flex flex-col gap-3">
 
             <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
               {t("También me encuentras en", "You can also find me on")}
@@ -259,9 +259,9 @@ export default function ContactSection({ }: Props) {
               {/* Boton de email */}
               <a
                 href="mailto:Davfool888@gmail.com"
-                className="w-14 h-14 bg-white/60 dark:bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-[0_8px_20px_rgb(0,0,0,0.05)] hover:bg-white hover:scale-110 hover:-translate-y-1 hover:shadow-purple-500/20 transition-all duration-300 text-purple-600 dark:text-purple-400 group"
+                className="w-12 h-12 bg-white/60 dark:bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-[0_8px_20px_rgb(0,0,0,0.05)] hover:bg-white hover:scale-110 hover:-translate-y-1 hover:shadow-purple-500/20 transition-all duration-300 text-purple-600 dark:text-purple-400 group"
               >
-                <FaEnvelope size={24} className="group-hover:rotate-12 transition-transform" />
+                <FaEnvelope size={20} className="group-hover:rotate-12 transition-transform" />
               </a>
 
               {/* Boton de linkedin */}
@@ -269,9 +269,9 @@ export default function ContactSection({ }: Props) {
                 href="https://www.linkedin.com/in/david-herrera-reales/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-14 h-14 bg-white/60 dark:bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-[0_8px_20px_rgb(0,0,0,0.05)] hover:bg-white hover:scale-110 hover:-translate-y-1 hover:shadow-blue-500/20 transition-all duration-300 text-blue-600 dark:text-blue-400 group"
+                className="w-12 h-12 bg-white/60 dark:bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-[0_8px_20px_rgb(0,0,0,0.05)] hover:bg-white hover:scale-110 hover:-translate-y-1 hover:shadow-blue-500/20 transition-all duration-300 text-blue-600 dark:text-blue-400 group"
               >
-                <FaLinkedin size={24} className="group-hover:-rotate-12 transition-transform" />
+                <FaLinkedin size={20} className="group-hover:-rotate-12 transition-transform" />
               </a>
 
               {/* Boton de github */}
@@ -279,9 +279,9 @@ export default function ContactSection({ }: Props) {
                 href="https://github.com/Davfool888"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-14 h-14 bg-white/60 dark:bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-[0_8px_20px_rgb(0,0,0,0.05)] hover:bg-white hover:scale-110 hover:-translate-y-1 hover:shadow-gray-500/20 transition-all duration-300 text-gray-800 dark:text-white group"
+                className="w-12 h-12 bg-white/60 dark:bg-black/30 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-[0_8px_20px_rgb(0,0,0,0.05)] hover:bg-white hover:scale-110 hover:-translate-y-1 hover:shadow-gray-500/20 transition-all duration-300 text-gray-800 dark:text-gray-200 group"
               >
-                <FaGithub size={24} className="group-hover:rotate-12 transition-transform" />
+                <FaGithub size={20} className="group-hover:rotate-12 transition-transform" />
               </a>
 
             </div>

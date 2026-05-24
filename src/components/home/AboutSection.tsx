@@ -222,7 +222,7 @@ export default function AboutSection({}: Props) {
   return (
     <section
       id="about"
-      className="min-h-[110vh] w-full flex items-center relative overflow-hidden pb-20"
+      className="h-screen w-full flex items-center justify-center relative overflow-hidden"
     >
 
       {/* Fondo suave de la seccion */}
@@ -234,13 +234,13 @@ export default function AboutSection({}: Props) {
 
         <div className="col-span-2 flex flex-col justify-center items-center pointer-events-auto h-full">
 
-          <div className="self-start pl-12 mb-12 flex flex-col gap-2">
+          <div className="self-start pl-12 mb-6 flex flex-col gap-2">
 
             <span className="text-purple-500 dark:text-purple-400 font-extrabold tracking-[0.2em] uppercase text-sm drop-shadow-sm">
               {t("Mi Trayectoria", "My Journey")}
             </span>
 
-            <h2 className="text-6xl font-black text-gray-800 dark:text-gray-100 m-0 tracking-tight">
+            <h2 className="text-5xl lg:text-6xl font-black text-gray-800 dark:text-gray-100 m-0 tracking-tight">
               {t("Sobre mí", "About Me")}
             </h2>
 
@@ -248,7 +248,7 @@ export default function AboutSection({}: Props) {
 
           {/* Contenedor principal del carrusel */}
           <div
-            className="relative w-full h-[550px] flex justify-center items-center perspective-1000"
+            className="relative w-full h-[480px] flex justify-center items-center perspective-1000"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
@@ -264,7 +264,7 @@ export default function AboutSection({}: Props) {
                   key={card.id}
                   onClick={() => handleCardClick(index)}
                   className={`
-                    absolute w-[340px] h-[460px] p-8 rounded-[2.5rem] flex flex-col
+                    absolute w-[310px] h-[410px] p-6 rounded-[2.5rem] flex flex-col
                     shadow-[0_20px_50px_rgba(0,0,0,0.1),inset_0_2px_15px_rgba(255,255,255,0.7)] 
                     dark:shadow-[0_30px_60px_rgba(0,0,0,0.4),inset_0_2px_15px_rgba(255,255,255,0.1)]
                     border border-white/60 dark:border-white/10 backdrop-blur-2xl
@@ -292,11 +292,11 @@ export default function AboutSection({}: Props) {
 
                   {card.icon}
 
-                  <h3 className="text-3xl font-black mb-3 text-gray-900 dark:text-white tracking-tight leading-tight drop-shadow-sm">
+                  <h3 className="text-2xl font-black mb-2 text-gray-900 dark:text-white tracking-tight leading-tight drop-shadow-sm">
                     {card.title[language]}
                   </h3>
 
-                  <p className='text-[15px] text-gray-700 dark:text-gray-300 flex-grow leading-relaxed font-medium'>
+                  <p className='text-sm text-gray-700 dark:text-gray-300 flex-grow leading-relaxed font-medium'>
                     {card.description[language]}
                   </p>
 

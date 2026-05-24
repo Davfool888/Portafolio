@@ -36,7 +36,7 @@ export default function HomeSection({ mainTitleToggle,skillsCarouselIndex, onNav
   return (
     <section
       id="home"
-      className="h-[100vh] flex items-center relative"
+      className="h-screen w-full flex items-center justify-center relative overflow-hidden"
     >
 
       {/* contenido principal del home */}

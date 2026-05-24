@@ -11,7 +11,7 @@ export default function PlaySection({}: Props) {
   return (
     <section
       id="play"
-      className="min-h-[120vh] flex flex-col items-center justify-center relative pb-20"
+      className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden"
     >
       
       {/* fondo suave */}

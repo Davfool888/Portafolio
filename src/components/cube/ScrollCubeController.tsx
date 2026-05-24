@@ -28,6 +28,10 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
     // Ultima posicion del mouse
     const lastMouse = useRef({ x: 0, y: 0 });
 
+    // Seguimiento magnetico pasivo
+    const passiveMouse = useRef({ x: 0, y: 0 });
+    const smoothPassiveMouse = useRef({ x: 0, y: 0 });
+
     // Vectores usados para la alineacion del cubo
     const cameraVectors = useRef({
         screenRight: new Vector3(1, 0, 0),
@@ -68,6 +72,10 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
 
         // Detecta el movimiento del mouse mientras se arrastra
         const handlePointerMove = (e: PointerEvent) => {
+
+            // Rotacion pasiva
+            passiveMouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+            passiveMouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
             if (!isDragging.current) return;
 
@@ -406,6 +414,23 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
         const currentScale = MathUtils.damp(groupRef.current.scale.x, targetScale, 4, delta)
 
         groupRef.current.scale.setScalar(currentScale)
+
+        // Aplica el movimiento magnetico del mouse
+        smoothPassiveMouse.current.x = MathUtils.damp(smoothPassiveMouse.current.x, passiveMouse.current.x, 2, delta)
+        smoothPassiveMouse.current.y = MathUtils.damp(smoothPassiveMouse.current.y, passiveMouse.current.y, 2, delta)
+
+        const cameraUp = new Vector3(0, 1, 0).applyQuaternion(state.camera.quaternion).normalize()
+        const cameraRight = new Vector3(1, 0, 0).applyQuaternion(state.camera.quaternion).normalize()
+
+        const isProjectsSection = offset >= 0.2 && offset < 0.4
+        const magneticStrength = isProjectsSection ? -0.5 : -1
+
+        const passiveRotX = new Quaternion().setFromAxisAngle(cameraUp, -smoothPassiveMouse.current.x * magneticStrength)
+        const passiveRotY = new Quaternion().setFromAxisAngle(cameraRight, smoothPassiveMouse.current.y * magneticStrength)
+        
+        const passiveDragQ = passiveRotX.multiply(passiveRotY)
+        
+        targetQuat.premultiply(passiveDragQ)
 
         // Rotacion suave del cubo
         groupRef.current.quaternion.slerp(targetQuat, 4 * delta)
