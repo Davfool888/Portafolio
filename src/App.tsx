@@ -17,6 +17,16 @@ import MainScene from "./scenes/MainScene"
 import { createCubeModel } from "./logic/cubeModel"
 import type { MoveType } from "./types/cube.types"
 
+import { useScrollSnap } from "./hooks/useScrollSnap"
+
+import {
+  SECTION_IDS,
+  SCROLL_PAGES,
+  getSectionScrollTops,
+  getSectionIdFromOffset,
+  toNormalizedOffset
+} from "./data/sectionsConfig"
+
 import { checkerboardPattern, checkerboardPatternInverse, interChangeCubeMid, interChangeCubeMidInverse, turntwofortwo, turntwofortwoInverse, Tpatron, TpatronInverse } from "./data/cubePatterns"
 import { LanguageProvider } from "./context/LanguageContext"
 
@@ -32,10 +42,10 @@ const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
 function App() {
 
   // Secciones que usa el navbar
-  const sections = ["home", "projects", "about", "contact", "play"]
+  const sections = SECTION_IDS
 
   // Estado para saber en que seccion esta el usuario
-  const [activeSection, setActiveSection] = useState("home")
+  const [activeSection, setActiveSection] = useState<string>("home")
 
   // Estado para saber cuando el scroll ya esta listo
   const [scrollReady, setScrollReady] = useState(false)
@@ -134,16 +144,27 @@ function App() {
 
   const scrollElRef = useRef<HTMLElement | null>(null)
 
-  const totalPages = 5
+  // Estado del scroll magnetico
+  const [magneticScroll, setMagneticScroll] = useState(() => {
+    const saved = localStorage.getItem('portfolio_magnetic_scroll')
+    return saved !== 'off'
+  })
 
-  // Offset manual de cada seccion
-  const sectionOffsets: Record<string, number> = {
-    home: 0 / totalPages,
-    projects: 1 / totalPages,
-    about: 2 / totalPages,
-    contact: 3 / totalPages,
-    play: 4 / totalPages,
+  // Activa o desactiva el scroll magnetico
+  const toggleMagneticScroll = () => {
+    setMagneticScroll(prev => {
+      const next = !prev
+      localStorage.setItem('portfolio_magnetic_scroll', next ? 'on' : 'off')
+      return next
+    })
   }
+
+  // Jala el scroll al limite de la seccion mas cercana
+  useScrollSnap({
+    scrollElRef,
+    scrollReady,
+    enabled: magneticScroll
+  })
 
   useEffect(() => {
 
@@ -250,21 +271,17 @@ function App() {
 
     const handleScroll = () => {
 
-      const offset = el.scrollTop / el.scrollHeight
+      // Detecta la seccion actual con el mismo offset que usa el cubo
+      const next = getSectionIdFromOffset(toNormalizedOffset(el))
 
-      // Detecta la seccion actual segun el scroll
-      if (offset < 0.2) setActiveSection("home")
-      else if (offset < 0.4) setActiveSection("projects")
-      else if (offset < 0.6) setActiveSection("about")
-      else if (offset < 0.8) setActiveSection("contact")
-      else setActiveSection("play")
+      if (next !== activeSection) setActiveSection(next)
     }
 
     el.addEventListener("scroll", handleScroll)
 
     return () => el.removeEventListener("scroll", handleScroll)
 
-  }, [scrollReady])
+  }, [scrollReady, activeSection])
 
 
 
@@ -272,15 +289,18 @@ function App() {
   // Funcion para mover el scroll entre secciones
   const scrollToSection = (id: string) => {
 
-    if (!scrollElRef.current) return
+    const el = scrollElRef.current
+    if (!el) return
 
-    const offset = sectionOffsets[id]
-    if (offset === undefined) return
+    const index = (sections as readonly string[]).indexOf(id)
+    if (index < 0) return
 
-    const targetScrolltop = offset * scrollElRef.current.scrollHeight
+    // Usa los puntos del snap para no pelear con el
+    const snapPoints = getSectionScrollTops(el.scrollHeight - el.clientHeight)
+    if (index >= snapPoints.length) return
 
-    scrollElRef.current.scrollTo({
-      top: targetScrolltop,
+    el.scrollTo({
+      top: snapPoints[index],
       behavior: "smooth"
     })
 
@@ -292,14 +312,14 @@ function App() {
     <LanguageProvider language={language} toggleLanguage={toggleLanguage}>
       <div className={`min-h-screen relative overflow-hidden transition-colors duration-700 ease-in-out
         ${isDarkMode 
-          ? "bg-gradient-to-br from-[#130f24] via-[#1a111a] to-[#0f181b] dark" 
+          ? "bg-[#05070c] dark" 
           : "bg-gradient-to-br from-[#f8f3ff] via-[#fff5f7] to-[#f0fdf9]"}`}
       >
 
         {/* Fondo de luces suaves */}
-        <div className={`fixed top-20 left-10 w-40 h-40 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#c471ed]/15" : "bg-[#c471ed]/20"}`} />
-        <div className={`fixed bottom-40 right-20 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#ff6b9d]/15" : "bg-[#ff6b9d]/20"}`} />
-        <div className={`fixed top-1/2 left-1/3 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#4ecdc4]/10" : "bg-[#4ecdc4]/15"}`} />
+        <div className={`fixed top-20 left-10 w-40 h-40 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#00ffcc]/10" : "bg-[#c471ed]/20"}`} />
+        <div className={`fixed bottom-40 right-20 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#a855f7]/10" : "bg-[#ff6b9d]/20"}`} />
+        <div className={`fixed top-1/2 left-1/3 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-colors duration-700 ${isDarkMode ? "bg-[#06b6d4]/10" : "bg-[#4ecdc4]/15"}`} />
 
         {/* Navbar superior */}
         <div className="fixed top-0 left-0 w-full z-50 pointer-events-auto">
@@ -317,12 +337,14 @@ function App() {
           setIsDarkMode={setIsDarkMode} 
           language={language} 
           toggleLanguage={toggleLanguage} 
+          magneticScroll={magneticScroll}
+          toggleMagneticScroll={toggleMagneticScroll}
         />
 
         {/* Canvas principal del portfolio */}
         <div className="fixed inset-0 z-0">
           <Canvas camera={{ position: [4, 4, 4], fov: 50 }}>
-            <ScrollControls pages={5.3} damping={0.2}>
+            <ScrollControls pages={SCROLL_PAGES} damping={0.2}>
 
               <MainScene
                 cubies={cubies}

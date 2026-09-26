@@ -3,15 +3,20 @@ import { Group, MathUtils, Quaternion, Vector3, Euler, Matrix4 } from "three"
 import { useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import type { Cubie } from "../../logic/cubeModel";
+import {
+    getSectionIndexFromOffset,
+    getSectionProgress
+} from "../../data/sectionsConfig";
 
 type ScrollCubeControllerProps = {
     children: React.ReactNode
     cubies: Cubie[]
     projectIndex: number
     setProjectIndex: React.Dispatch<React.SetStateAction<number>>
+    activeSection: string
 }
 
-export default function ScrollCubeController({ children, cubies, projectIndex, setProjectIndex }: ScrollCubeControllerProps) {
+export default function ScrollCubeController({ children, cubies, projectIndex, setProjectIndex, activeSection }: ScrollCubeControllerProps) {
 
     const groupRef = useRef<Group>(null)
     const scroll = useScroll()
@@ -44,7 +49,8 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
     const handlePointerDown = (e: any) => {
 
         // Solo deja mover el cubo en projects
-        if (!scroll || scroll.offset < 0.2 || scroll.offset >= 0.4) return;
+        if (!scroll) return;
+        if (getSectionIndexFromOffset(scroll.offset) !== 1) return;
 
         isDragging.current = true
 
@@ -186,6 +192,10 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
 
         const offset = scroll.offset
 
+        // Seccion actual y cuanto lleva recorrido de ella
+        const sectionIndex = getSectionIndexFromOffset(offset)
+        const progress = getSectionProgress(offset)
+
         let targetX = 0
         let targetY = 0
         let targetZ = 0
@@ -194,9 +204,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
         const targetQuat = new Quaternion()
 
         // Home
-        if (offset < 0.2) {
-
-            const progress = offset / 0.2
+        if (sectionIndex === 0) {
 
             targetX = 2.5
             targetY = 1.15
@@ -207,15 +215,15 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetQuat.setFromEuler(new Euler(0, progress * Math.PI * 0.5, 0))
 
         // Projects
-        } else if (offset < 0.4) {
-
-            const progress = (offset - 0.2) / 0.2
+        } else if (sectionIndex === 1) {
 
             // Hace que el cubo llegue rapido al centro
             const moveProgress = Math.min(progress / 0.3, 1.0)
 
             targetX = MathUtils.lerp(2.0, 0, moveProgress)
-            targetY = MathUtils.lerp(0.5, 0, moveProgress)
+
+            // Sube el cubo como 40px en pantalla
+            targetY = MathUtils.lerp(0.5, 0.29, moveProgress)
             targetZ = 0
 
             let targetPieceId = "0_1_0"
@@ -321,11 +329,11 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             const endQuat = new Quaternion().setFromEuler(new Euler(0.5, Math.PI * 1.5, 0));
 
             // Entrada del cubo a projects
-            if (progress < 0.3) {
+            if (progress < 0.1) {
 
-                targetQuat.copy(startQuat).slerp(alignQuat, progress / 0.3);
+                targetQuat.copy(startQuat).slerp(alignQuat, progress / 0.1);
 
-                targetScale = MathUtils.lerp(0.75, 0.8, progress / 0.3);
+                targetScale = MathUtils.lerp(0.75, 0.8, progress / 0.1);
 
                 targetDragRot.current.x = 0;
                 targetDragRot.current.y = 0;
@@ -334,7 +342,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
                 dragRot.current.y = 0;
 
             // Movimiento libre del cubo
-            } else if (progress < 0.8) {
+            } else if (progress < 0.9) {
 
                 dragRot.current.x = MathUtils.damp(dragRot.current.x, targetDragRot.current.x, 6, delta);
 
@@ -353,15 +361,13 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             } else {
 
                 // Salida de projects
-                targetQuat.copy(alignQuat).slerp(endQuat, (progress - 0.8) / 0.2);
+                targetQuat.copy(alignQuat).slerp(endQuat, (progress - 0.9) / 0.1);
 
-                targetScale = MathUtils.lerp(0.8, 1, (progress - 0.8) / 0.2);
+                targetScale = MathUtils.lerp(0.8, 1, (progress - 0.9) / 0.1);
             }
 
         // About
-        } else if (offset < 0.6) {
-
-            const progress = (offset - 0.4) / 0.2
+        } else if (sectionIndex === 2) {
 
             targetX = -5
             targetY = -1
@@ -379,9 +385,7 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
             targetDragRot.current.y = 0;
 
         // Contact
-        } else if (offset < 0.8) {
-
-            const progress = (offset - 0.6) / 0.2
+        } else if (sectionIndex === 3) {
 
             targetX = 2.5
             targetY = 0
@@ -393,8 +397,6 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
 
         // Play
         } else {
-
-            const progress = (offset - 0.8) / 0.2
 
             targetX = MathUtils.lerp(0, 0, progress)
             targetY = MathUtils.lerp(-1.5, 0, progress)
@@ -416,21 +418,25 @@ export default function ScrollCubeController({ children, cubies, projectIndex, s
         groupRef.current.scale.setScalar(currentScale)
 
         // Aplica el movimiento magnetico del mouse
-        smoothPassiveMouse.current.x = MathUtils.damp(smoothPassiveMouse.current.x, passiveMouse.current.x, 2, delta)
-        smoothPassiveMouse.current.y = MathUtils.damp(smoothPassiveMouse.current.y, passiveMouse.current.y, 2, delta)
+        // en play se apaga para no estorbar los botones
+        if (activeSection !== "play") {
 
-        const cameraUp = new Vector3(0, 1, 0).applyQuaternion(state.camera.quaternion).normalize()
-        const cameraRight = new Vector3(1, 0, 0).applyQuaternion(state.camera.quaternion).normalize()
+            smoothPassiveMouse.current.x = MathUtils.damp(smoothPassiveMouse.current.x, passiveMouse.current.x, 2, delta)
+            smoothPassiveMouse.current.y = MathUtils.damp(smoothPassiveMouse.current.y, passiveMouse.current.y, 2, delta)
 
-        const isProjectsSection = offset >= 0.2 && offset < 0.4
-        const magneticStrength = isProjectsSection ? -0.5 : -1
+            const cameraUp = new Vector3(0, 1, 0).applyQuaternion(state.camera.quaternion).normalize()
+            const cameraRight = new Vector3(1, 0, 0).applyQuaternion(state.camera.quaternion).normalize()
 
-        const passiveRotX = new Quaternion().setFromAxisAngle(cameraUp, -smoothPassiveMouse.current.x * magneticStrength)
-        const passiveRotY = new Quaternion().setFromAxisAngle(cameraRight, smoothPassiveMouse.current.y * magneticStrength)
-        
-        const passiveDragQ = passiveRotX.multiply(passiveRotY)
-        
-        targetQuat.premultiply(passiveDragQ)
+            const isProjectsSection = sectionIndex === 1
+            const magneticStrength = isProjectsSection ? -0.5 : -1
+
+            const passiveRotX = new Quaternion().setFromAxisAngle(cameraUp, -smoothPassiveMouse.current.x * magneticStrength)
+            const passiveRotY = new Quaternion().setFromAxisAngle(cameraRight, smoothPassiveMouse.current.y * magneticStrength)
+
+            const passiveDragQ = passiveRotX.multiply(passiveRotY)
+
+            targetQuat.premultiply(passiveDragQ)
+        }
 
         // Rotacion suave del cubo
         groupRef.current.quaternion.slerp(targetQuat, 4 * delta)

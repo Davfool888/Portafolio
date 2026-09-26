@@ -1,14 +1,16 @@
 import React from "react"
-import { Briefcase, FolderOpen, Globe, Moon, Sun } from "lucide-react"
+import { Briefcase, FolderOpen, Globe, Moon, Sun, Magnet } from "lucide-react"
 
 interface Props {
     isDarkMode: boolean
     setIsDarkMode: React.Dispatch<React.SetStateAction<boolean>>
     language: "es" | "en"
     toggleLanguage: () => void
+    magneticScroll: boolean
+    toggleMagneticScroll: () => void
 }
 
-export default function FloatingTags({ isDarkMode, setIsDarkMode, language, toggleLanguage }: Props) {
+export default function FloatingTags({ isDarkMode, setIsDarkMode, language, toggleLanguage, magneticScroll, toggleMagneticScroll }: Props) {
 
     // Funcion para traducir este componente que esta fuera del scroll
     const t = (es: string, en: string) => language === "es" ? es : en
@@ -36,6 +38,28 @@ export default function FloatingTags({ isDarkMode, setIsDarkMode, language, togg
             {/* Botones flotantes del lado derecho */}
             <div className="flex gap-4 pointer-events-auto">
 
+                {/* Boton para cambiar el scroll magnetico */}
+                <button
+                    onClick={toggleMagneticScroll}
+                    className="flex items-center justify-center bg-white/40 dark:bg-white/10 backdrop-blur-xl border border-white/50 dark:border-white/10 w-11 h-11 rounded-full text-gray-700 dark:text-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:bg-white/60 dark:hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group relative"
+                    title={magneticScroll
+                        ? t("Scroll magnetico activado", "Magnetic scroll on")
+                        : t("Scroll magnetico desactivado", "Magnetic scroll off")}
+                >
+                    <Magnet
+                        size={20}
+                        strokeWidth={2.5}
+                        className={`transition-colors ${magneticScroll
+                            ? "text-cyan-600 dark:text-cyan-400"
+                            : "text-gray-400 dark:text-gray-600"}`}
+                    />
+
+                    {/* Badge que muestra si el snap esta activo */}
+                    <span className={`absolute -top-1 -right-1 text-[9px] font-black rounded-full w-5 h-5 flex items-center justify-center text-white transition-colors ${magneticScroll ? "bg-cyan-500" : "bg-gray-400"}`}>
+                        {magneticScroll ? "ON" : "OFF"}
+                    </span>
+                </button>
+
                 {/* Boton para cambiar el idioma */}
                 <button 
                     onClick={toggleLanguage}
@@ -44,7 +68,7 @@ export default function FloatingTags({ isDarkMode, setIsDarkMode, language, togg
                 >
                     <Globe size={20} strokeWidth={2.5} className="group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors"/>
 
-                    {/* Badge pequeño que muestra el idioma activo */}
+                    {/* Badge pequeno que muestra el idioma activo */}
                     <span className="absolute -top-1 -right-1 text-[10px] font-black bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
                         {language.toUpperCase()}
                     </span>

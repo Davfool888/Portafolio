@@ -50,7 +50,7 @@ export default function MoveControl({ label, position, rotation, onMove }: MoveC
         <group position={position} rotation={rotation}>
             <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3} >
                 
-                {/* disco con diseño acrilico */}
+                {/* disco con diseno acrilico */}
                 <mesh>
                     <cylinderGeometry args={[0.75, 0.75, 0.04, 32]} />
                     <meshPhysicalMaterial

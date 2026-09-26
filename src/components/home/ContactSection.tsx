@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { FaWhatsapp, FaLinkedin, FaEnvelope, FaGithub } from 'react-icons/fa'
 import { useLanguage } from '../../context/LanguageContext'
+import { SECTION_HEIGHT_CLASS } from '../../data/sectionsConfig'
 
 type Props = {
   setActiveSection?: (id: string) => void
@@ -114,7 +115,7 @@ export default function ContactSection({ }: Props) {
   return (
     <section
       id="contact"
-      className="h-screen w-full flex items-center justify-center relative overflow-hidden"
+      className={`${SECTION_HEIGHT_CLASS} w-full flex items-center justify-center relative overflow-hidden`}
     >
 
       {/* Fondo suave de la seccion */}

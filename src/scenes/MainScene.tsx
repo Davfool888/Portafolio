@@ -91,6 +91,7 @@ export default function MainScene({ cubies, isRotate, move, isAnimating, setCubi
                 cubies={cubies}
                 projectIndex={projectIndex}
                 setProjectIndex={setProjectIndex}
+                activeSection={activeSection}
             >
 
                 <group ref={spinGroupRef}>

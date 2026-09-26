@@ -84,7 +84,7 @@ export default function RubikCube({
 
               
 
-                // animacion visual, no real
+                // animacion visual nomas
                 const isTop = c.position[1] === 1
                 const isRight = c.position[0] === 1
                 const isFront = c.position[2] == 1

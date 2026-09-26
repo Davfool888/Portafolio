@@ -5,6 +5,7 @@ import { Globe, Maximize2, X } from "lucide-react"
 import { AnimatePresence, motion } from 'framer-motion'
 import { SiGithub } from "react-icons/si"
 import { useLanguage } from '../../context/LanguageContext'
+import { SECTION_HEIGHT_CLASS } from '../../data/sectionsConfig'
 
 type Props = {
   setActiveSection?: (id: string) => void
@@ -151,18 +152,18 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
 
   // colores oscuros del degradado ambiental
   const darkAmbientColors = [
-    "rgba(254, 250, 224, 0.15)", 
-    "rgba(253, 253, 150, 0.12)",  
-    "rgba(208, 244, 234, 0.15)", 
-    "rgba(230, 215, 255, 0.15)", 
-    "rgba(255, 229, 180, 0.12)",  
-    "rgba(252, 213, 206, 0.15)", 
+    "rgba(6, 182, 212, 0.18)",
+    "rgba(34, 197, 94, 0.15)",
+    "rgba(20, 184, 166, 0.18)",
+    "rgba(168, 85, 247, 0.18)",
+    "rgba(234, 179, 8, 0.14)",
+    "rgba(236, 72, 153, 0.15)",
   ]
 
   return (
     <section
       id="projects"
-      className="h-[100vh] flex items-center relative overflow-hidden"
+      className={`${SECTION_HEIGHT_CLASS} flex items-center relative overflow-hidden`}
       style={{ cursor: 'pointer' }}
     >
 
@@ -179,7 +180,7 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
       <motion.div 
         className="absolute inset-0 pointer-events-none hidden dark:block z-0"
         animate={{
-          background: `linear-gradient(to top, rgba(15, 24, 27, 0.95) 0%, rgba(15, 24, 27, 0) 35%, ${darkAmbientColors[projectIndex] || darkAmbientColors[0]} 100%)`
+          background: `linear-gradient(to top, rgba(5, 7, 12, 0.95) 0%, rgba(5, 7, 12, 0) 35%, ${darkAmbientColors[projectIndex] || darkAmbientColors[0]} 100%)`
         }}
         transition={{ duration: 1.5, ease: "easeInOut" }}
       />
@@ -187,7 +188,7 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
 
 
       {/* contenedor principal con perspectiva 3D */}
-      <div className="container mx-auto px-12 z-10 relative w-full h-[600px] flex items-center justify-center perspective-[2000px]">
+      <div className="container mx-auto px-6 lg:px-12 z-10 relative w-full h-[600px] flex items-center justify-center perspective-[2000px]">
 
         <AnimatePresence custom={direction} mode='popLayout'>
 
@@ -209,12 +210,12 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
           >
 
             {/* contenedor de las 3 columnas principales */}
-            <div className="w-full h-full grid grid-cols-3 gap-16 items-center">
+            <div className="w-full h-full grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-16 items-center">
 
             {/* lado izquierdo */}
             <div className="flex flex-col justify-center gap-6 pointer-events-auto">
 
-              {/* texto pequeño superior */}
+              {/* texto pequeno superior */}
               <div className="mb-4">
                 <span className="text-sm text-purple-600 dark:text-purple-400 font-extrabold tracking-[0.2em] uppercase drop-shadow-sm">
                   {t("Proyecto Destacado", "Featured Project")}
@@ -243,7 +244,7 @@ export default function ProjectsSection({ projectIndex, setProjectIndex }: Props
             </div>
 
             {/* parte central libre para el cubo */}
-            <div className="relative w-full h-[500px] pointer-events-none" />
+            <div className="hidden lg:block relative w-full h-[500px] pointer-events-none" />
 
             {/* lado derecho */}
             <div data-no-nav className="relative w-full h-[500px] flex items-center justify-center pointer-events-auto">

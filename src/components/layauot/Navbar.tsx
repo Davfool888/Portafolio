@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useLanguage } from "../../context/LanguageContext"
 
 type Props = {
-  sections: string[]
+  sections: readonly string[]
   onNavigate: (section: string) => void
   activeSection: string
   scrollElRef: React.MutableRefObject<HTMLElement | null>

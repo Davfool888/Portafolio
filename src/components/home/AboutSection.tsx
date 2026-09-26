@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Minimize2, Code, Building2, Briefcase, GraduationCap, Laptop } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
+import { SECTION_HEIGHT_CLASS } from '../../data/sectionsConfig'
 
 
 type Props = {
@@ -222,7 +223,7 @@ export default function AboutSection({}: Props) {
   return (
     <section
       id="about"
-      className="h-screen w-full flex items-center justify-center relative overflow-hidden"
+      className={`${SECTION_HEIGHT_CLASS} w-full flex items-center justify-center relative overflow-hidden`}
     >
 
       {/* Fondo suave de la seccion */}

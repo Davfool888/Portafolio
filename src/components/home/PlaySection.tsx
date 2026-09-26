@@ -1,4 +1,4 @@
-
+import { SECTION_HEIGHT_CLASS } from '../../data/sectionsConfig'
 
 type Props = {
   setActiveSection?: (id: string) => void 
@@ -11,7 +11,7 @@ export default function PlaySection({}: Props) {
   return (
     <section
       id="play"
-      className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden"
+      className={`${SECTION_HEIGHT_CLASS} w-full flex flex-col items-center justify-center relative overflow-hidden`}
     >
       
       {/* fondo suave */}

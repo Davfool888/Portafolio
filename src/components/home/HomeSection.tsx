@@ -3,6 +3,7 @@ import RubikSkillsCarousel from '../../data/RubikSkillsCarousel'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLanguage } from '../../context/LanguageContext'
 import { FileText } from 'lucide-react'
+import { SECTION_HEIGHT_CLASS } from '../../data/sectionsConfig'
 
 type Props = {
   setActiveSection?: (id: string) => void
@@ -36,7 +37,7 @@ export default function HomeSection({ mainTitleToggle,skillsCarouselIndex, onNav
   return (
     <section
       id="home"
-      className="h-screen w-full flex items-center justify-center relative overflow-hidden"
+      className={`${SECTION_HEIGHT_CLASS} w-full flex items-center justify-center relative overflow-hidden`}
     >
 
       {/* contenido principal del home */}
@@ -139,7 +140,7 @@ export default function HomeSection({ mainTitleToggle,skillsCarouselIndex, onNav
         </div>
 
         {/* lado derecho */}
-        <div className="relative w-full h-[500px] pointer-events-none">
+        <div className="hidden lg:block relative w-full h-[500px] pointer-events-none">
         </div>
 
       </div>
