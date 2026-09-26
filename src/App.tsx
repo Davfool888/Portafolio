@@ -41,7 +41,7 @@ const ABOUT_PATTERNS: [MoveType[], MoveType[]][] = [
 
 function App() {
 
-  // Secciones que usa el navbar
+  // Secciones que usa el navbar para el desplazamiento
   const sections = SECTION_IDS
 
   // Estado para saber en que seccion esta el usuario
